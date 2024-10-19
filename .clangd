@@ -1,0 +1,4 @@
+CompileFlags:
+  Add:
+    - "--target=wasm32-unknown-emscripten"
+    - "-I/opt/homebrew/opt/emscripten/system/include"
