@@ -104,6 +104,7 @@ Challenge challenges[] = {
         }
     },
     {
+        .id = 2,
         .for_lesson_title = "Assembly Tutorial",
         .challenge_index = 1,
         .slug = "/1",
@@ -139,6 +140,7 @@ Challenge challenges[] = {
         }
     },
     {
+        .id = 3,
         .for_lesson_title = "Assembly Tutorial",
         .challenge_index = 2,
         .slug = "/2",
@@ -177,7 +179,7 @@ Challenge challenges[] = {
     },
     // ===== LOOP UNROLLING =====
     {
-        .id = 2,
+        .id = 4,
         .for_lesson_title = "Loop Unrolling",
         .challenge_index = 0,
         .slug = "/0",
@@ -187,7 +189,7 @@ Challenge challenges[] = {
         .starter_code = "",
     },
     {
-        .id = 3,
+        .id = 5,
         .for_lesson_title = "Loop Unrolling",
         .challenge_index = 1,
         .slug = "/1",
@@ -199,7 +201,7 @@ Challenge challenges[] = {
 
     // ===== PIPELINING =====
     {
-        .id = 4,
+        .id = 6,
         .for_lesson_title = "Pipelining",
         .challenge_index = 0,
         .slug = "/0",
