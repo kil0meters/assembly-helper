@@ -1,5 +1,6 @@
 :root {
     --border-color: rgb(128, 128, 128);
+    --red: rgb(239 68 68);
     --text-color: rgba(0, 0, 0, 0.95);
     --default-transition: 200ms ease-in-out;
     --hover-hint: rgba(0, 0, 0, 0.1);
@@ -82,6 +83,16 @@ h1 a {
 
     & .cycle-value {
         font-family: monospace;
+    }
+
+    & #error-viewer {
+        grid-column: 1 / 3;
+    }
+
+    & #error-viewer div {
+        font-family: monospace;
+        background-color: var(--red);
+        padding: 4px;
     }
 
     & #execute-button {

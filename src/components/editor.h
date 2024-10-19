@@ -78,8 +78,13 @@ void editor_execute(char *input) {
         char buffer2[128];
         snprintf(buffer2, 128, "%u", count);
         populate_selector_with_html("#instruction-count", buffer2);
-    }
+        populate_selector_with_html("#error-viewer", "");
+    } else {
+        char render_buffer[HTML_BUFFER_SIZE];
+        snprintf(render_buffer, HTML_BUFFER_SIZE, "<div>%s</div>", ERROR_BUF);
 
+        populate_selector_with_html("#error-viewer", render_buffer);
+    }
 
     free(input);
 }

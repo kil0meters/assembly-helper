@@ -1,5 +1,7 @@
 #pragma once
 
+char ERROR_BUF[1024];
+
 EM_JS(void, jlog, (const char *val), {
     console.log(UTF8ToString(val));
 });

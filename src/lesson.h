@@ -13,8 +13,15 @@ typedef struct {
     int completed_challenges;
 } Lesson;
 
-#define NUM_LESSONS 4
+#define NUM_LESSONS 5
 Lesson lessons[NUM_LESSONS] = {
+    {
+        .title = "Assembly Tutorial",
+        .description = "Learn the basics of RISC-V assembly.",
+        .slug = "#/lessons/tutorial",
+        .total_challenges = 4,
+        .completed_challenges = 0
+    },
     {
         .title = "Loop Unrolling",
         .description = "Loop unrolling is a technique whereby",
