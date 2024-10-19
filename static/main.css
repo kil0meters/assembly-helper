@@ -1,6 +1,7 @@
 :root {
     --border-color: rgb(128, 128, 128);
     --red: rgb(239 68 68);
+    --green: #03fc0f;
     --text-color: rgba(0, 0, 0, 0.95);
     --default-transition: 200ms ease-in-out;
     --hover-hint: rgba(0, 0, 0, 0.1);
@@ -96,7 +97,7 @@ h1 a {
     }
 
     & #execute-button {
-        background-color: #03fc0f;
+        background-color: var(--green);
         font-size: 1em;
         padding: 12px;
         border: 0;
@@ -286,6 +287,7 @@ pre {
 #sidebar {
     position: fixed;
     display: flex;
+    overflow-y: auto;
     right: 0;
     top: 0;
     bottom: 0;
@@ -449,4 +451,14 @@ pre {
         text-align: right;
         font-family: monospace;
     }
+}
+
+.completion-failure {
+    background-color: var(--red);
+    padding: 8px;
+}
+
+.completion-success {
+    background-color: var(--green);
+    padding: 8px;
 }

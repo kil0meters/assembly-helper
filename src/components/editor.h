@@ -1,6 +1,7 @@
 #pragma once
 #include "base.h"
 #include "emulator_registers.h"
+#include "completion_status.h"
 
 #include "../emu/RISCVAssembler.h"
 
@@ -88,11 +89,13 @@ void editor_execute(char *input) {
         populate_selector_with_html("#emulator-registers", buffer);
         populate_selector_with_html("#error-viewer", "");
 
-        if (check_clear_condition(current_challenge->clear_condition)) {
-            populate_selector_with_html("#completion-status", "Your code works!");
-        } else {
-            populate_selector_with_html("#completion-status", "Your code doesn't work :/");
+        bool status = check_clear_condition(current_challenge->clear_condition);
+        if (status) {
+            current_challenge->complete = true;
+            save_challenge_progress();
         }
+        completion_status_template(buffer, status);
+        populate_selector_with_html("#completion-status", buffer);
     } else {
         char render_buffer[HTML_BUFFER_SIZE];
         snprintf(render_buffer, HTML_BUFFER_SIZE, "<div>%s</div>", ERROR_BUF);
