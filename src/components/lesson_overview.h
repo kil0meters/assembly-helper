@@ -11,6 +11,6 @@ const char *LESSON_OVERVIEW_TEMPLATE = QUOTE(
 </div>
 );
 
-void lesson_overview_template(char *out, char *title) {
-    snprintf(out, HTML_BUFFER_SIZE, LESSON_OVERVIEW_TEMPLATE, title, "lorem ipsum");
+void lesson_overview_template(char *out, Lesson lesson) {
+    snprintf(out, HTML_BUFFER_SIZE, LESSON_OVERVIEW_TEMPLATE, lesson.title, lesson.description);
 }
