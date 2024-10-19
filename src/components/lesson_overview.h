@@ -12,14 +12,14 @@ const char *LESSON_OVERVIEW_TEMPLATE = QUOTE(
     <p>%s</p>
     %s
     <div class="centered mt-auto">
-        <a class="gradient-button" href="#/lesson/unrolling/activity"><span>Begin Activity<span></a>
+        <a class="gradient-button" href="#/lessons/unrolling/0"><span>Begin Activity<span></a>
     </div>
 </div>
 );
 
-void lesson_overview_template(char *out, Lesson lesson) {
+void lesson_overview_template(char *out, Lesson *lesson) {
     char challenge_list[HTML_BUFFER_SIZE];
-    challenge_list_template(challenge_list, lesson.title);
+    challenge_list_template(challenge_list, lesson);
 
-    snprintf(out, HTML_BUFFER_SIZE, LESSON_OVERVIEW_TEMPLATE, lesson.title, lesson.description, challenge_list);
+    snprintf(out, HTML_BUFFER_SIZE, LESSON_OVERVIEW_TEMPLATE, lesson->title, lesson->description, challenge_list);
 }

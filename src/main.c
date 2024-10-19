@@ -4,19 +4,10 @@
 #include "lesson.h"
 #include "components/base.h"
 #include "components/lesson_overview.h"
+#include "components/challenge_view.h"
 #include "components/lesson_list.h"
 
 char render_buffer[HTML_BUFFER_SIZE];
-
-EM_JS(void, populate_selector_with_html, (const char *selector, const char *innerHTML), {
-    let element = document.querySelector(UTF8ToString(selector));
-    element.innerHTML = UTF8ToString(innerHTML);
-});
-
-EM_JS(void, set_element_classes, (const char *selector, const char *className), {
-    let element = document.querySelector(UTF8ToString(selector));
-    element.className = UTF8ToString(className);
-});
 
 EMSCRIPTEN_KEEPALIVE
 void render_on_route() {
@@ -26,7 +17,7 @@ void render_on_route() {
     jlog(route);
 
     bool found = false;
-    set_element_classes("#sidebar", "closed");
+    set_element_classes("#root", "closed");
 
     if (strncmp(route, "#/", 3) == 0 || strncmp(route, "#", 2) == 0 || strncmp(route, "", 1) == 0) {
         lesson_list_template(render_buffer, NUM_LESSONS, lessons);
@@ -34,16 +25,36 @@ void render_on_route() {
         found = true;
     } else {
         for (int i = 0; i < NUM_LESSONS; i++) {
-            if (strncmp(route, lessons[i].slug, strlen(lessons[i].slug)) == 0) {
-                lesson_list_template(render_buffer, NUM_LESSONS, lessons);
-                populate_selector_with_html("#content", render_buffer);
+            int lesson_slug_start_len = strlen(lessons[i].slug);
+            if (strncmp(route, lessons[i].slug, lesson_slug_start_len - 1) == 0) {
+                if (strlen(route) == lesson_slug_start_len) {
+                    lesson_list_template(render_buffer, NUM_LESSONS, lessons);
+                    populate_selector_with_html("#content", render_buffer);
 
-                lesson_overview_template(render_buffer, lessons[i]);
-                populate_selector_with_html("#sidebar", render_buffer);
-                set_element_classes("#sidebar", "open");
+                    lesson_overview_template(render_buffer, &lessons[i]);
+                    populate_selector_with_html("#sidebar", render_buffer);
+                    set_element_classes("#root", "open");
 
-                found = true;
-                break;
+                    found = true;
+                    break;
+                } else {
+                    for (int j = 0; j < NUM_CHALLENGES; j++) {
+                        if (strncmp(route + lesson_slug_start_len, challenges[j].slug, strlen(challenges[j].slug)) == 0
+                         && strncmp(challenges[j].for_lesson_title, lessons[i].title, strlen(lessons[i].title)) == 0) {
+                            challenge_view_template(render_buffer, &lessons[i], &challenges[j]);
+                            populate_selector_with_html("#content", render_buffer);
+
+                            challenge_sidebar_template(render_buffer, &challenges[j]);
+                            populate_selector_with_html("#sidebar", render_buffer);
+                            set_element_classes("#root", "open");
+
+                            render_editor("this\nis a test\nplease ignore");
+
+                            found = true;
+                            break;
+                        }
+                    }
+                }
             }
         }
     }
@@ -57,11 +68,23 @@ void render_on_route() {
     free(route);
 }
 
+EMSCRIPTEN_KEEPALIVE void toggle_sidebar() {
+    char *classes = get_element_classes("#root");
+    if (strncmp(classes, "open", 5) == 0) {
+        set_element_classes("#root", "closed");
+    } else {
+        set_element_classes("#root", "open");
+    }
+    free(classes);
+}
+
 // Initialize function
 EMSCRIPTEN_KEEPALIVE void init() {
     read_lesson_progress();
 
-    emscripten_run_script("window.addEventListener('hashchange', () => Module._render_on_route())");
-    emscripten_run_script("window.addEventListener('load', () => Module._render_on_route())");
-    emscripten_run_script("Module._render_on_route()");
+    EM_ASM({
+        window.addEventListener('hashchange', () => Module._render_on_route());
+        window.addEventListener('load', () => Module._render_on_route());
+        Module._render_on_route();
+    });
 }

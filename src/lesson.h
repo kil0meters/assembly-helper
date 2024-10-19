@@ -13,7 +13,7 @@ typedef struct {
     int completed_challenges;
 } Lesson;
 
-#define NUM_LESSONS 3
+#define NUM_LESSONS 4
 Lesson lessons[NUM_LESSONS] = {
     {
         .title = "Loop Unrolling",
@@ -29,8 +29,14 @@ Lesson lessons[NUM_LESSONS] = {
         .completed_challenges = 0
     },
     {
-        .title = "Baz",
-        .slug = "#/lessons/baz",
+        .title = "Cache Coherency",
+        .slug = "#/lessons/cache",
+        .total_challenges = 4,
+        .completed_challenges = 0
+    },
+    {
+        .title = "Branch Prediction",
+        .slug = "#/lessons/branches",
         .total_challenges = 4,
         .completed_challenges = 0
     },

@@ -6,7 +6,7 @@ const char *LESSON_LIST_TEMPLATE = " \
     <div class=\"page\"> \
         <h1>Assembly Playground</h1> \
         <p>Learn about low-level optimizations by writing <a href=\"https://en.wikipedia.org/wiki/RISC-V\">RISC-V</a> assembly.</p> \
-        <div class=\"card lesson-list\"> \
+        <div class=\"lesson-grid\"> \
             %s \
         </div> \
     </div> \
@@ -19,7 +19,7 @@ const char *LESSON_LIST_TEMPLATE = " \
 </div>";
 
 const char *LESSON_LIST_ITEM_TEMPLATE = QUOTE(
-<a href="%s"><span>%s</span> <span class="badge">%d/%d</span></a>
+<a class="card" href="%s"><span class="inner-text">%s</span> <span class="badge">%d/%d</span></a>
 );
 
 void lesson_list_template(char *out, int num_items, Lesson *items) {

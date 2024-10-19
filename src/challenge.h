@@ -5,6 +5,7 @@
 typedef struct {
     char *for_lesson_title;
     int challenge_index;
+    char *slug;
 
     char *title;
     char *description;
@@ -22,6 +23,7 @@ Challenge challenges[] = {
     {
         .for_lesson_title = "Loop Unrolling",
         .challenge_index = 0,
+        .slug = "/0",
 
         .title = "Baby Steps",
         .description = "Here a loop. Make it faster.",
@@ -31,6 +33,7 @@ Challenge challenges[] = {
     {
         .for_lesson_title = "Loop Unrolling",
         .challenge_index = 1,
+        .slug = "/1",
 
         .title = "Teenage Steps",
         .description = "Here a loop. Make it faster. Again",
@@ -42,6 +45,7 @@ Challenge challenges[] = {
     {
         .for_lesson_title = "Pipelining",
         .challenge_index = 0,
+        .slug = "/0",
 
         .title = "MARIO",
         .description = "Mario, we need your help!",
