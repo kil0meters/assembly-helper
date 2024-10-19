@@ -101,6 +101,41 @@ Challenge challenges[] = {
             .cond = { .reg = { 2, 0x20 } },
         }
     },
+    {
+        .for_lesson_title = "Assembly Tutorial",
+        .challenge_index = 1,
+        .slug = "/1",
+
+        .title = "Intro To Assembly - Memory",
+        .description = QUOTE(
+            <p>
+            	Now that you know how to set and add, its important to know how to interact
+            	with memory. Our simulated CPU has 256kb of memory. All program code starts at
+            	adrress 0 so you'll need to use an address high enough to not override the program.
+            </p>
+
+            <p>
+                There are two necessary instructions for memory access, load and store. All memory
+                instructions need to know the length of data theyre working with (b for byte, h for a half word or 2 byte, and w for a work or 4 bytes).
+                For example, to store a byte you use the sb instruction.
+            </p>
+
+            <pre>
+                s[bhw]  rd, imm(rs1)<br>
+                l[bhw]  rd, imm(rs1)<br>
+            </pre>
+
+            <p>
+                Can you set address <code>0x1000</code> to <code>0x15</code>?
+            </p>
+        ),
+        .starter_code = "addi x2, 0x15\n; Set a register to the address you want to write to and use the store instruction\n",
+        .clear_condition = {
+            .descrim = MEMORY_CONDITIONAL,
+            .required_cycle_count = 1000000ULL,
+            .cond = { .mem = { 0x1000, 0x4,  (u8*)"\x15\x0\x0\x0"} },
+        }
+    },
     // ===== LOOP UNROLLING =====
     {
         .for_lesson_title = "Loop Unrolling",
