@@ -245,7 +245,16 @@ RISCVWord* rva_assemble(U32* insnCount, StrA inSrc) {
 	ctx.labels = (RVALabelLocation*)malloc(ctx.labelCapacity * sizeof(RVALabelLocation));
 	ctx.labelPatchCapacity = 1;
 	ctx.labelPatches = (RVALabelLocation*)malloc(ctx.labelPatchCapacity * sizeof(RVALabelLocation));
+	StrA lastSrc = (StrA){ 0 };
 	while (ctx.src.length) {
+		if (lastSrc.str == ctx.src.str) {
+			// Infinite loop mitigation 
+			ctx.src.str++, ctx.src.length--;
+			if (!ctx.src.length) {
+				break;
+			}
+		}
+		lastSrc = ctx.src;
 		if (rva_try_consume(&ctx, StrALit(";"))) {
 			while (ctx.src.length && ctx.src.str[0] != '\n') {
 				ctx.src.str++, ctx.src.length--;
