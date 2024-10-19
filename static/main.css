@@ -26,16 +26,16 @@ body {
     display: flex;
     flex-direction: column;
     gap: 12px;
+    max-width: calc(70% - 16px);
 }
 
 .card {
-    border: 1px solid var(--border-color);
+    outline: 1px solid var(--border-color);
 }
 
 .lesson-list {
     display: flex;
     flex-direction: column;
-    max-width: calc(70% - 16px);
 
     & a {
         font-weight: bolder;
