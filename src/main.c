@@ -91,7 +91,7 @@ EMSCRIPTEN_KEEPALIVE void toggle_sidebar() {
 
 // Initialize function
 EMSCRIPTEN_KEEPALIVE void init() {
-    read_lesson_progress();
+    read_challenge_progress();
     rve_init();
 
     EM_ASM({

@@ -28,9 +28,21 @@ void lesson_list_template(char *out, int num_items, Lesson *items) {
     const char *end = buffer + sizeof(buffer);
 
     for (int i = 0; i < num_items; i++) {
+        int completed_challenges = 0;
+        int total_challenges = 0;
+
+        for (int j = 0; j < NUM_CHALLENGES; j++) {
+            if (strncmp(challenges[j].for_lesson_title, items[i].title, strlen(items[i].title)) == 0) {
+                total_challenges += 1;
+                if (challenges[j].complete) {
+                    completed_challenges += 1;
+                }
+            }
+        }
+
         cur += snprintf(cur, end - cur, LESSON_LIST_ITEM_TEMPLATE,
                         items[i].slug, items[i].title,
-                        items[i].completed_challenges, items[i].total_challenges);
+                        completed_challenges, total_challenges);
     }
 
     snprintf(out, HTML_BUFFER_SIZE, LESSON_LIST_TEMPLATE, buffer);

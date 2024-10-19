@@ -7,7 +7,9 @@ EM_JS(void, jlog, (const char *val), {
 });
 
 EM_JS(char *, local_storage_get, (const char *key), {
-    return stringToNewUTF8(localStorage.getItem(UTF8ToString(key)));
+    let val = localStorage.getItem(UTF8ToString(key));
+    if (val) return stringToNewUTF8(val);
+    return null;
 });
 
 EM_JS(void, local_storage_set, (const char *key, const char* value), {

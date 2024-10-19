@@ -47,6 +47,7 @@ bool check_clear_condition(ClearCondition c) {
 }
 
 typedef struct {
+    int id;
     char *for_lesson_title;
     int challenge_index;
     char *slug;
@@ -66,6 +67,7 @@ typedef struct {
 Challenge challenges[] = {
     // ===== TUTORIAL =====
     {
+        .id = 1,
         .for_lesson_title = "Assembly Tutorial",
         .challenge_index = 0,
         .slug = "/0",
@@ -138,6 +140,7 @@ Challenge challenges[] = {
     },
     // ===== LOOP UNROLLING =====
     {
+        .id = 2,
         .for_lesson_title = "Loop Unrolling",
         .challenge_index = 0,
         .slug = "/0",
@@ -147,6 +150,7 @@ Challenge challenges[] = {
         .starter_code = "",
     },
     {
+        .id = 3,
         .for_lesson_title = "Loop Unrolling",
         .challenge_index = 1,
         .slug = "/1",
@@ -158,6 +162,7 @@ Challenge challenges[] = {
 
     // ===== PIPELINING =====
     {
+        .id = 4,
         .for_lesson_title = "Pipelining",
         .challenge_index = 0,
         .slug = "/0",
@@ -167,3 +172,40 @@ Challenge challenges[] = {
         .starter_code = "",
     }
 };
+
+#define CHALLENGE_PROGRESS_KEY "challenge-progress"
+void read_challenge_progress() {
+    char *progress = local_storage_get(CHALLENGE_PROGRESS_KEY);
+    if (progress == NULL) return;
+
+    char *token = strtok(progress, ",");
+
+    while (token != NULL) {
+        int i;
+
+        for (i = 0; i < NUM_CHALLENGES; i++)
+            if (challenges[i].id == atoi(token))
+                break;
+        if (i == NUM_CHALLENGES) break;
+
+        token = strtok(NULL, ",");
+
+        if (token != NULL) challenges[i].complete = atoi(token);
+        else break;
+
+        token = strtok(NULL, ",");
+    }
+
+    free(progress);
+}
+
+void save_challenge_progress() {
+    char buf[1024];
+    char *cur = buf;
+    const char *end = buf + sizeof(buf);
+    for (int i = 0; i < NUM_LESSONS; i++) {
+        cur += snprintf(cur, end - cur, "%d,%d,", challenges[i].id, challenges[i].complete);
+    }
+
+    local_storage_set(CHALLENGE_PROGRESS_KEY, buf);
+}
