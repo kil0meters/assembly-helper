@@ -2,8 +2,8 @@
 #include "base.h"
 
 const char *LESSON_LIST_TEMPLATE = QUOTE(
-<div class="card">
-    <h1>%s</h1>
+<div class="card lesson-list">
+    %s
 </div>
 );
 
@@ -21,9 +21,9 @@ void lesson_list_template(char *out, int num_items, LessonListItem *items) {
     char tmp_buffer2[HTML_BUFFER_SIZE] = "";
 
     for (int i = 0; i < num_items; i++) {
-        snprintf(tmp_buffer, HTML_BUFFER_SIZE, LESSON_LIST_ITEM_TEMPLATE, items[i].title, items[i].slug);
+        snprintf(tmp_buffer, HTML_BUFFER_SIZE, LESSON_LIST_ITEM_TEMPLATE, items[i].slug, items[i].title);
         strncat(tmp_buffer2, tmp_buffer, HTML_BUFFER_SIZE);
     }
 
-    snprintf(out, HTML_BUFFER_SIZE, LESSON_LIST_ITEM_TEMPLATE, tmp_buffer2);
+    snprintf(out, HTML_BUFFER_SIZE, LESSON_LIST_TEMPLATE, tmp_buffer2);
 }

@@ -1,5 +1,6 @@
 #include <emscripten.h>
 
+#include "util.h"
 #include "components/base.h"
 #include "components/lesson_overview.h"
 #include "components/lesson_list.h"
@@ -7,10 +8,6 @@
 EM_JS(void, populate_selector_with_html, (const char *selector, const char *innerHTML), {
     let element = document.querySelector(UTF8ToString(selector));
     element.innerHTML = UTF8ToString(innerHTML);
-});
-
-EM_JS(void, jlog, (const char *val), {
-    console.log(UTF8ToString(val));
 });
 
 // Initialize function

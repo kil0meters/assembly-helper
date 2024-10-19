@@ -885,8 +885,8 @@ function dbg(...args) {
 // end include: runtime_debug.js
 // === Body ===
 
-function populate_selector_with_html(selector,innerHTML) { let element = document.querySelector(UTF8ToString(selector)); element.innerHTML = UTF8ToString(innerHTML); }
 function jlog(val) { console.log(UTF8ToString(val)); }
+function populate_selector_with_html(selector,innerHTML) { let element = document.querySelector(UTF8ToString(selector)); element.innerHTML = UTF8ToString(innerHTML); }
 
 // end include: preamble.js
 
