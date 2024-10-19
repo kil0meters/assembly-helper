@@ -109,9 +109,9 @@ Challenge challenges[] = {
         .title = "Intro To Assembly - Memory",
         .description = QUOTE(
             <p>
-            	Now that you know how to set and add, its important to know how to interact
+            	Now that you know how to do basic arithmetic, its important to know how to interact
             	with memory. Our simulated CPU has 256kb of memory. All program code starts at
-            	adrress 0 so you'll need to use an address high enough to not override the program.
+            	adrress 0 so you'll need to use an address high enough to not override the program (unless thats what you're going for).
             </p>
 
             <p>
@@ -134,6 +134,43 @@ Challenge challenges[] = {
             .descrim = MEMORY_CONDITIONAL,
             .required_cycle_count = 1000000ULL,
             .cond = { .mem = { 0x1000, 0x4,  (u8*)"\x15\x0\x0\x0"} },
+        }
+    },
+    {
+        .for_lesson_title = "Assembly Tutorial",
+        .challenge_index = 2,
+        .slug = "/2",
+
+        .title = "Intro To Assembly - Branching",
+        .description = QUOTE(
+            <p>
+                Now you can do arithmetic and access memory, but a program that does the same thing everytime is boring.
+                What you need is branches. Branches allow you to jump to a different part of memory if a condition is passed.
+                Branches can be used like an if statement or a loop.
+            </p>
+
+            <p>
+                The branch instruction need a condition. For example, beq is branch if equal. Branches can go forward or backwards in code.
+            </p>
+
+            <pre>
+                beq rs1, rs2, label<br>
+                bne rs1, rs2, label<br>
+                blt rs1, rs2, label<br>
+                bge rs1, rs2, label<br>
+                bltu rs1, rs2, label<br>
+                bgeu rs1, rs2, label<br>
+            </pre>
+
+            <p>
+                Write some code to write the byte <code>0x1</code> to addresses <code>0x1000</code>-<code>0x1010</code>.
+            </p>
+        ),
+        .starter_code = "addi x2, 0x1000\n",
+        .clear_condition = {
+            .descrim = MEMORY_CONDITIONAL,
+            .required_cycle_count = 1000000ULL,
+            .cond = { .mem = { 0x1000, 0x10,  (u8*)"\x1\x1\x1\x1\x1\x1\x1\x1\x1\x1\x1\x1\x1\x1\x1\x1"} },
         }
     },
     // ===== LOOP UNROLLING =====
