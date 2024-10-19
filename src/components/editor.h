@@ -1,9 +1,11 @@
 #pragma once
 #include "base.h"
 
+#include "../emu/RISCVAssembler.h"
+
 const char *EDITOR_TEMPLATE = QUOTE(
     <div id="line-numbers"></div>
-    <div contenteditable spellcheck="false" id="editor"></div>
+    <textarea spellcheck="false" id="editor"></textarea>
 );
 
 void update_line_numbers(char *content) {
@@ -20,7 +22,6 @@ void update_line_numbers(char *content) {
         }
         c++;
     }
-
 
     populate_selector_with_html("#line-numbers", render_buffer);
 }
@@ -46,17 +47,39 @@ void render_editor(char *content) {
         });
 
         document.getElementById('editor').addEventListener('input', (e) => {
-            let patt2=new RegExp("<div>","g");
-            let patt3=new RegExp("</div>","g");
-            let patt4=new RegExp("<br>","g");
-            let s=e.target.innerHTML.replace(patt2,"\n").replace(patt3,"").replace(patt4,"");
-            Module._editor_on_input(stringToNewUTF8(s))
+            Module._editor_on_input(stringToNewUTF8(e.target.value))
         });
     });
 }
 
+RISCVWord *rv_binary;
+
 EMSCRIPTEN_KEEPALIVE
 void editor_on_input(char *input) {
     update_line_numbers(input);
+    free(input);
+}
+
+EMSCRIPTEN_KEEPALIVE
+void editor_execute(char *input) {
+    uint32_t count;
+    rv_binary = rva_assemble(&count, (StrA){ .str = input, .length = strlen(input) });
+
+    if (rv_binary != NULL) {
+        char buffer[1024];
+        char *cur = buffer;
+        char *end = buffer + sizeof(buffer);
+        for (int i = 0; i < count; i++) {
+            cur += snprintf(cur, end - cur, " %08x", rv_binary[i]);
+        }
+
+        puts(buffer);
+
+        char buffer2[128];
+        snprintf(buffer2, 128, "%u", count);
+        populate_selector_with_html("#instruction-count", buffer2);
+    }
+
+
     free(input);
 }

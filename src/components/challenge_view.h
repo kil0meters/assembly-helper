@@ -15,10 +15,13 @@ const char *CHALLENGE_VIEW_TEMPLATE = QUOTE(
         </button>
 
         <div class="execution-buddy">
-            <span class="p-4 pt-8 pl-12">Target</span> <span class="p-4 pt-8 pr-12 cycle-value text-right">1,000,000 cycles</span>
+            <div id="error-viewer"></div>
+
+            <span class="p-4 pt-8 pl-12 ">Instruction Count</span> <span id="instruction-count" class="p-4 pr-12 pt-8 cycle-value text-right">---</span>
+            <span class="p-4 pl-12">Target</span> <span class="p-4 pr-12 cycle-value text-right">%lld cycles</span>
             <span class="p-4 pl-12 pb-8">Last Execution</span> <span id="last-execution-cycles" class="p-4 pr-12 pb-8 cycle-value text-right">--- cycles</span>
 
-            <button id="execute-button">execute</button>
+            <button id="execute-button" onclick="Module._editor_execute(stringToNewUTF8(document.getElementById('editor').value))">execute</button>
         </div>
     </div>
 );
@@ -30,9 +33,8 @@ const char *CHALLENGE_SIDEBAR_TEMPLATE = QUOTE(
 );
 
 void challenge_view_template(char *out, Lesson *lesson, Challenge *challenge) {
-    snprintf(out, HTML_BUFFER_SIZE, CHALLENGE_VIEW_TEMPLATE, lesson->slug, challenge->title);
+    snprintf(out, HTML_BUFFER_SIZE, CHALLENGE_VIEW_TEMPLATE, lesson->slug, challenge->title, challenge->required_cycle_count);
 }
-
 
 void challenge_sidebar_template(char *out, Challenge *challenge) {
     snprintf(out, HTML_BUFFER_SIZE, CHALLENGE_SIDEBAR_TEMPLATE, challenge->description);

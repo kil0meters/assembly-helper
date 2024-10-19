@@ -48,7 +48,7 @@ void render_on_route() {
                             populate_selector_with_html("#sidebar", render_buffer);
                             set_element_classes("#root", "open");
 
-                            render_editor("this\nis a test\nplease ignore");
+                            render_editor("add x1, x1, x1\n");
 
                             found = true;
                             break;
