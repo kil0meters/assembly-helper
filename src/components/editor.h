@@ -1,5 +1,6 @@
 #pragma once
 #include "base.h"
+#include "emulator_registers.h"
 
 #include "../emu/RISCVAssembler.h"
 
@@ -62,11 +63,11 @@ void editor_on_input(char *input) {
 
 EMSCRIPTEN_KEEPALIVE
 void editor_execute(char *input) {
+    char buffer[HTML_BUFFER_SIZE];
     uint32_t count;
     rv_binary = rva_assemble(&count, (StrA){ .str = input, .length = strlen(input) });
 
     if (rv_binary != NULL) {
-        char buffer[1024];
         char *cur = buffer;
         char *end = buffer + sizeof(buffer);
         for (int i = 0; i < count; i++) {
@@ -75,13 +76,23 @@ void editor_execute(char *input) {
 
         puts(buffer);
 
-        char buffer2[128];
-        snprintf(buffer2, 128, "%u", count);
-        populate_selector_with_html("#instruction-count", buffer2);
+        snprintf(buffer, HTML_BUFFER_SIZE, "%u", count);
+        populate_selector_with_html("#instruction-count", buffer);
         populate_selector_with_html("#error-viewer", "");
 
-        // rve_load_program(rv_binary, count);
-        // rve_exec_program();
+        rve_init();
+        rve_load_program(rv_binary, count);
+        rve_exec_program();
+
+        emulator_registers_template(buffer);
+        populate_selector_with_html("#emulator-registers", buffer);
+        populate_selector_with_html("#error-viewer", "");
+
+        if (check_clear_condition(current_challenge->clear_condition)) {
+            populate_selector_with_html("#completion-status", "Your code works!");
+        } else {
+            populate_selector_with_html("#completion-status", "Your code doesn't work :/");
+        }
     } else {
         char render_buffer[HTML_BUFFER_SIZE];
         snprintf(render_buffer, HTML_BUFFER_SIZE, "<div>%s</div>", ERROR_BUF);

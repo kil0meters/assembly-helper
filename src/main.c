@@ -2,6 +2,11 @@
 
 #include "util.h"
 #include "lesson.h"
+#include "challenge.h"
+
+Challenge *current_challenge = NULL;
+Lesson *current_lesson = NULL;
+
 #include "rve_moss/risc-v.h"
 #include "components/base.h"
 #include "components/lesson_overview.h"
@@ -15,10 +20,12 @@ void render_on_route() {
     char *route = (char*)EM_ASM_PTR({
       return stringToNewUTF8(window.location.hash);
     });
-    jlog(route);
 
     bool found = false;
     set_element_classes("#root", "closed");
+
+    current_challenge = NULL;
+    current_lesson = NULL;
 
     if (strncmp(route, "#/", 3) == 0 || strncmp(route, "#", 2) == 0 || strncmp(route, "", 1) == 0) {
         lesson_list_template(render_buffer, NUM_LESSONS, lessons);
@@ -36,6 +43,7 @@ void render_on_route() {
                     populate_selector_with_html("#sidebar", render_buffer);
                     set_element_classes("#root", "open");
 
+                    current_lesson = &lessons[i];
                     found = true;
                     break;
                 } else {
@@ -49,8 +57,10 @@ void render_on_route() {
                             populate_selector_with_html("#sidebar", render_buffer);
                             set_element_classes("#root", "open");
 
-                            render_editor("li x1, 32\nadd x2, x1, x1\n");
+                            render_editor(challenges[j].starter_code);
 
+                            current_lesson = &lessons[j];
+                            current_challenge = &challenges[j];
                             found = true;
                             break;
                         }

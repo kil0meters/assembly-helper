@@ -63,7 +63,7 @@ void rva_err_explicit(RVACtx* ctx, StrA errMsg, const void* errPosPtr) {
 	U32 errPos = errPosPtr ? (const char*)errPosPtr - ctx->originalSrc.str : ctx->src.str - ctx->originalSrc.str;
 	U32 lineCount = 0;
 	for (U32 i = 0; i < errPos; lineCount += ctx->originalSrc.str[i++] == '\n')
-    	snprintf(ERROR_BUF, sizeof(ERROR_BUF), "Line: %d: %s\n", lineCount, errMsg.str);
+    	snprintf(ERROR_BUF, sizeof(ERROR_BUF), "Line %d: %s\n", lineCount, errMsg.str);
 }
 void rva_err(RVACtx* ctx, StrA errMsg) {
 	rva_err_explicit(ctx, errMsg, NULL);

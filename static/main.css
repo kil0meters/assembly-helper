@@ -423,3 +423,30 @@ pre {
         padding-inline: 8px;
     }
 }
+
+.description-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    & pre {
+        margin-inline: auto;
+        width: min-content;
+        white-space: nowrap;
+    }
+}
+
+.register-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 16px;
+    width: 100%;
+
+    & .register-label {
+    }
+
+    & .register-value {
+        text-align: right;
+        font-family: monospace;
+    }
+}
