@@ -79,6 +79,9 @@ void editor_execute(char *input) {
         snprintf(buffer2, 128, "%u", count);
         populate_selector_with_html("#instruction-count", buffer2);
         populate_selector_with_html("#error-viewer", "");
+
+        // rve_load_program(rv_binary, count);
+        // rve_exec_program();
     } else {
         char render_buffer[HTML_BUFFER_SIZE];
         snprintf(render_buffer, HTML_BUFFER_SIZE, "<div>%s</div>", ERROR_BUF);

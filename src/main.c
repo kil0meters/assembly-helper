@@ -2,6 +2,7 @@
 
 #include "util.h"
 #include "lesson.h"
+#include "rve_moss/risc-v.h"
 #include "components/base.h"
 #include "components/lesson_overview.h"
 #include "components/challenge_view.h"
@@ -48,7 +49,7 @@ void render_on_route() {
                             populate_selector_with_html("#sidebar", render_buffer);
                             set_element_classes("#root", "open");
 
-                            render_editor("add x1, x1, x1\n");
+                            render_editor("li x1, 32\nadd x2, x1, x1\n");
 
                             found = true;
                             break;
@@ -81,6 +82,7 @@ EMSCRIPTEN_KEEPALIVE void toggle_sidebar() {
 // Initialize function
 EMSCRIPTEN_KEEPALIVE void init() {
     read_lesson_progress();
+    rve_init();
 
     EM_ASM({
         window.addEventListener('hashchange', () => Module._render_on_route());

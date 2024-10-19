@@ -2,7 +2,7 @@
 
 #include <stdlib.h>
 #include "RISCVLib.h"
-#include "risc-v-const.h"
+#include "../rve_moss/risc-v-const.h"
 
 typedef U32 RISCVWord;
 #define RVA_REG_PC 32
