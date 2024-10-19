@@ -10,6 +10,10 @@ typedef struct {
     char *description;
     char *starter_code;
     uint64_t required_cycle_count;
+
+    // dynamically loaded in from localstorage
+    char *code;
+    bool complete;
 } Challenge;
 
 #define NUM_CHALLENGES 3

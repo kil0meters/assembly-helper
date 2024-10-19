@@ -1,15 +1,22 @@
 #pragma once
 #include "base.h"
 
-const char *LESSON_LIST_TEMPLATE = QUOTE(
-<div class="page">
-    <h1>Assembly Playground</h1>
-    <p>Learn about low-level optimizations by writing <a href="https://en.wikipedia.org/wiki/RISC-V">RISC-V</a> assembly.</p>
-    <div class="card lesson-list">
-        %s
-    </div>
-</div>
-);
+const char *LESSON_LIST_TEMPLATE = " \
+<div class=\"grid-container\"> \
+    <div class=\"page\"> \
+        <h1>Assembly Playground</h1> \
+        <p>Learn about low-level optimizations by writing <a href=\"https://en.wikipedia.org/wiki/RISC-V\">RISC-V</a> assembly.</p> \
+        <div class=\"card lesson-list\"> \
+            %s \
+        </div> \
+    </div> \
+    <div class=\"grid\"> \
+        <pre class=\"placeholder\"> \
+(•_•)<br>\
+ <)  )╯ pick a problem,<br> \
+ /  \\  cowboy<br></pre> \
+    </div> \
+</div>";
 
 const char *LESSON_LIST_ITEM_TEMPLATE = QUOTE(
 <a href="%s"><span>%s</span> <span class="badge">%d/%d</span></a>

@@ -10,7 +10,7 @@ const char *CHALLENGE_LIST_TEMPLATE = QUOTE(
 );
 
 const char *CHALLENGE_LIST_ITEM_TEMPLATE = QUOTE(
-    <span>%s</span>
+    <span class="challenge-list-item">%s</span>
 );
 
 void challenge_list_template(char *out, char *lesson_title) {
@@ -24,5 +24,9 @@ void challenge_list_template(char *out, char *lesson_title) {
         }
     }
 
-    snprintf(out, HTML_BUFFER_SIZE, CHALLENGE_LIST_TEMPLATE, buffer);
+    if (end != cur) {
+        snprintf(out, HTML_BUFFER_SIZE, CHALLENGE_LIST_TEMPLATE, buffer);
+    } else {
+        snprintf(out, HTML_BUFFER_SIZE, "");
+    }
 }

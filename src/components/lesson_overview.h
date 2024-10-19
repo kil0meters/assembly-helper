@@ -5,7 +5,10 @@
 
 const char *LESSON_OVERVIEW_TEMPLATE = QUOTE(
 <div class="lesson-overview">
-    <h1>%s</h1>
+    <div class="flex">
+        <h1>%s</h1>
+        <a href="#/" class="close-button"><div></div></a>
+    </div>
     <p>%s</p>
     %s
     <div class="centered mt-auto">
