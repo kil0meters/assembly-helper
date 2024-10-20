@@ -3,7 +3,7 @@ emcc \
     --no-entry \
     -std=gnu23 \
     -g \
-    -s EXPORTED_FUNCTIONS='["_init", "_render_on_route", "_toggle_sidebar", "_editor_on_input", "_editor_execute"]' \
+    -s EXPORTED_FUNCTIONS='["_init", "_render_on_route", "_toggle_sidebar", "_editor_on_input", "_editor_execute", "_step_conway"]' \
     -s DEFAULT_LIBRARY_FUNCS_TO_INCLUDE='["$UTF8ToString", "$stringToNewUTF8"]' \
     -o static/main.js \
     src/main.c \

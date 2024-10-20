@@ -12,7 +12,7 @@ const char *LESSON_OVERVIEW_TEMPLATE = QUOTE(
     <p>%s</p>
     %s
     <div class="centered mt-auto">
-        <a class="gradient-button" href="#/lessons/unrolling/0"><span>Begin Activity<span></a>
+        <a class="gradient-button" href="#/lessons/tutorial/0"><span>Begin Activity<span></a>
     </div>
 </div>
 );

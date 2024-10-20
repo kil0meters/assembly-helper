@@ -2,7 +2,7 @@
 
 #include <stdlib.h>
 #include "RISCVLib.h"
-#include "risc-v-const.h"
+#include "../rve_moss/risc-v-const.h"
 
 typedef U32 RISCVWord;
 #define RVA_REG_PC 32
@@ -248,7 +248,7 @@ RISCVWord* rva_assemble(U32* insnCount, StrA inSrc) {
 	StrA lastSrc = (StrA){ 0 };
 	while (ctx.src.length) {
 		if (lastSrc.str == ctx.src.str) {
-			// Infinite loop mitigation 
+			// Infinite loop mitigation
 			ctx.src.str++, ctx.src.length--;
 			if (!ctx.src.length) {
 				break;
@@ -335,8 +335,8 @@ RISCVWord* rva_assemble(U32* insnCount, StrA inSrc) {
 					}
 					RISCVWord* wordToChange = &ctx.insns[ctx.labelPatches[i].offset];
 					enum RVE_OPCODE_VALS opcode = (enum RVE_OPCODE_VALS)(*wordToChange & 0b1111111);
-					U32 labelPatch = ctx.insnCount - ctx.labelPatches[i].offset;
-					opcode == RVE_OPCODE_B ? rva_patch_b(&ctx, wordToChange, labelPatch) : rva_patch_j(&ctx, wordToChange, labelPatch);
+					U32 labelPatch = (ctx.insnCount - ctx.labelPatches[i].offset) * 4;
+					opcode == RVE_OPCODE_VAL_B ? rva_patch_b(&ctx, wordToChange, labelPatch) : rva_patch_j(&ctx, wordToChange, labelPatch);
 					ctx.labelPatches[i--] = ctx.labelPatches[--ctx.labelPatchCount];
 				}
 			} else if (stra_eq_no_case(iden, StrALit("addi"))) {

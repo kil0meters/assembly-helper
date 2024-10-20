@@ -1,9 +1,9 @@
 #include "inst.h"
 #include "register.h"
+#include "exec.h"
 #include <stdio.h>
 
 
-#define RVE_VIRTUAL_MEMORY_SIZE 256000
 u8 rve_memory[RVE_VIRTUAL_MEMORY_SIZE];
 
 
@@ -62,7 +62,7 @@ void rve_exec_blt(rve_generic_inst* inst) {
 
 void rve_exec_bge(rve_generic_inst* inst) {
 	rve_s_type* s_type = (rve_s_type*)&inst->data;
-	if ((i32)rve_register_get(s_type->rs1) > (i32)rve_register_get(s_type->rs2)) {
+	if ((i32)rve_register_get(s_type->rs1) >= (i32)rve_register_get(s_type->rs2)) {
 		rve_register_add(RVE_PC_REGISTER, s_type->imm - 4);
 	}
 }
@@ -76,7 +76,7 @@ void rve_exec_bltu(rve_generic_inst* inst) {
 
 void rve_exec_bgeu(rve_generic_inst* inst) {
 	rve_s_type* s_type = (rve_s_type*)&inst->data;
-	if (rve_register_get(s_type->rs1) > rve_register_get(s_type->rs2)) {
+	if (rve_register_get(s_type->rs1) >= rve_register_get(s_type->rs2)) {
 		rve_register_add(RVE_PC_REGISTER, s_type->imm - 4);
 	}
 }

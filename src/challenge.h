@@ -63,7 +63,7 @@ typedef struct {
     ClearCondition clear_condition;
 } Challenge;
 
-#define NUM_CHALLENGES 4
+#define NUM_CHALLENGES 6
 Challenge challenges[] = {
     // ===== TUTORIAL =====
     {
@@ -114,7 +114,7 @@ Challenge challenges[] = {
             <p>
             	Now that you know how to do basic arithmetic, its important to know how to interact
             	with memory. Our simulated CPU has 256kb of memory. All program code starts at
-            	adrress 0 so you'll need to use an address high enough to not override the program (unless thats what you're going for).
+            	adrress 0 so you will need to use an address high enough to not override the program.
             </p>
 
             <p>
@@ -124,8 +124,8 @@ Challenge challenges[] = {
             </p>
 
             <pre>
-                s[bhw]  rd, imm(rs1)<br>
-                l[bhw]  rd, imm(rs1)<br>
+                s[bhw] rsi, rd, imm<br>
+                l[bhw] rsi rd, imm<br>
             </pre>
 
             <p>
@@ -197,6 +197,111 @@ Challenge challenges[] = {
         .title = "Teenage Steps",
         .description = "Here a loop. Make it faster. Again",
         .starter_code = "",
+    },
+
+    // ===== BRANCH PREDICTION =====
+    {
+
+        .for_lesson_title = "Branch Prediction",
+        .challenge_index = 0,
+        .slug = "/0",
+
+        .title = "Conway's Game of Life",
+        .description = "<div id=\"conway\"></div>",
+        .starter_code = " \
+; Starting code \n\
+lui x31, 0x1000\n\
+lui x30, 0x2000\n\
+addi x2, x0, 1\n\
+sb x31, x2, 205\n\
+sb x31, x2, 225\n\
+sb x31, x2, 224\n\
+sb x31, x2, 245\n\
+sb x31, x2, 246\n\
+\n\
+addi x1, x0, 20 ; grid width \n\
+add x2, x0, x0 \n\
+addi x26, x0, 1 \n\
+\n\
+updateloop: \n\
+\n\
+; Update grid \n\
+addi x3, x0, 0 ; x \n\
+addi x4, x0, 0 ; y \n\
+loopy: \n\
+loopx: \n\
+\n\
+; count into x6 \n\
+add x6, x0, x0 \n\
+add x7, x0, x3 \n\
+add x8, x0, x4 \n\
+sub x7, x7, x26 ; inner x \n\
+sub x8, x8, x26 ; inner y \n\
+addi x9, x7, 3 ; boundx \n\
+addi x10, x8, 3 ; boundy \n\
+countloopy: \n\
+countloopx: \n\
+; Accumulate x6 \n\
+bne x3, x7, notcenter \n\
+beq x4, x8, innercontinue \n\
+notcenter: \n\
+bgeu x7, x1, innercontinue \n\
+bgeu x8, x1, innercontinue \n\
+\n\
+mul x5, x4, x1 \n\
+add x5, x5, x3 ; y * width + x \n\
+add x5, x5, x31 ; current cell address \n\
+lbu x18, x5, 0 \n\
+add x6, x6, x18 \n\
+\n\
+innercontinue: \n\
+addi x7, x7, 1\n\
+bne x7, x9, countloopx\n\
+addi x8, x8, 1\n\
+bne x8, x10, countloopy\n\
+\n\
+mul x5, x4, x1\n\
+add x5, x5, x3 ; y * width + x\n\
+add x5, x5, x31 ; current cell address\n\
+lbu x7, x5, 0 ; current value (1 if alive)\n\
+\n\
+; Compute new value based on x7 and x6\n\
+bne x7, x0, livecell\n\
+addi x21, x0, 3\n\
+bne x6, x21, deadcell \n\
+addi x7, x0, 1 \n\
+j deadcell \n\
+livecell: \n\
+addi x21, x0, 2 \n\
+beq x6, x21, cellok \n\
+addi x21, x0, 3 \n\
+beq x6, x21, cellok \n\
+addi x7, x0, 1 \n\
+cellok: \n\
+deadcell: \n\
+\n\
+sub x5, x5, x31 \n\
+add x5, x5, x30 ; Change address to result \n\
+sb x5, x7, 0 \n\
+\n\
+addi x3, x3, 1 \n\
+bne x3, x1, loopx \n\
+addi x4, x4, 1 \n\
+bne x4, x1, loopy \n\
+\n\
+add x29, x0, x31 ; dst \n\
+add x28, x0, x30 ; src \n\
+addi x27, x31, 400 ; end \n\
+copyloop: \n\
+lw x25, x28, 0 \n\
+sw x29, x25, 0 \n\
+addi x29, x29, 4 \n\
+addi x28, x28, 4 \n\
+bne x27, x29, copyloop \n\
+\n\
+j updateloop \n\
+        ",
+        // .starter_code = "addi x1, x0, 1\naddi x2, x0, 0x500\nsb x2, x1, 0x500",
     },
 
     // ===== PIPELINING =====

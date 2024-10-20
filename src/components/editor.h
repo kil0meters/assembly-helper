@@ -3,7 +3,7 @@
 #include "emulator_registers.h"
 #include "completion_status.h"
 
-#include "../emu/RISCVAssembler.h"
+#include "../rva/RISCVAssembler.h"
 
 const char *EDITOR_TEMPLATE = QUOTE(
     <div id="line-numbers"></div>
@@ -83,7 +83,7 @@ void editor_execute(char *input) {
 
         rve_init();
         rve_load_program(rv_binary, count);
-        rve_exec_program();
+        // rve_exec_program();
 
         emulator_registers_template(buffer);
         populate_selector_with_html("#emulator-registers", buffer);

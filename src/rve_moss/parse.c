@@ -200,7 +200,7 @@ rve_generic_inst rve_parse_b_type(u32 inst, enum RVE_OPCODES op) {
 
 rve_generic_inst rve_parse_u_type(u32 inst, enum RVE_OPCODES op) {
 	rve_u_type out;
-	out.imm = (inst & 0b1111111111111111111110000000000000);
+	out.imm = (inst & 0b11111111111111111111000000000000);
 	out.rd = ((inst >> 7) & 0b11111);
 	out.opcode = (inst & 0b1111111);
 	rve_generic_inst o;

@@ -60,9 +60,9 @@ void rve_parse_and_exec(u32 instruction) {
 	rve_instructions[inst.instruction_index].exec(&inst);
 	rve_register_add(RVE_PC_REGISTER, 4);
 
-	rve_print_inst(&inst);
-	printf(": ");
-	rve_register_debug_print();
+	// rve_print_inst(&inst);
+	// printf(": ");
+	// rve_register_debug_print();
 }
 
 void rve_exec_program() {

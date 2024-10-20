@@ -462,3 +462,15 @@ pre {
     background-color: var(--green);
     padding: 8px;
 }
+
+#conway {
+    grid-template-columns: repeat(1fr, 20);
+    grid-template-rows: repeat(1fr, 20);
+
+    aspect-ratio: 1 / 1;
+    width: 100%;
+
+    & .box.filled {
+        background-color: black;
+    }
+}

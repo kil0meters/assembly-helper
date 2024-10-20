@@ -11,6 +11,7 @@ Lesson *current_lesson = NULL;
 #include "components/base.h"
 #include "components/lesson_overview.h"
 #include "components/challenge_view.h"
+#include "components/conway_view.h"
 #include "components/lesson_list.h"
 
 char render_buffer[HTML_BUFFER_SIZE];
@@ -58,6 +59,16 @@ void render_on_route() {
                             set_element_classes("#root", "open");
 
                             render_editor(challenges[j].starter_code);
+
+                            if (challenges[j].id == 5) {
+                                uint32_t count;
+                                RISCVWord *rv_binary = rva_assemble(&count, (StrA){ .str = challenges[j].starter_code, .length = strlen(challenges[j].starter_code) });
+                                rve_init();
+                                rve_load_program(rv_binary, count);
+
+                                jlog("test");
+                                step_conway();
+                            }
 
                             current_lesson = &lessons[j];
                             current_challenge = &challenges[j];

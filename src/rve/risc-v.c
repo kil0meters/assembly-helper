@@ -48,9 +48,9 @@ rve_generic_inst rve_parse_and_schedule(rve_ctx* ctx, u32 instruction) {
 	rve_instructions[inst.instruction_index].exec(&inst);
 	ctx->speculative_pc += 4;
 
-	rve_print_inst(&inst);
-	printf(": ");
-	rve_register_debug_print();
+	// rve_print_inst(&inst);
+	// printf(": ");
+	// rve_register_debug_print();
 }
 
 void rve_exec(rve_ctx* ctx, rve_generic_inst* inst) {
