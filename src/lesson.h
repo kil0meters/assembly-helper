@@ -1,10 +1,5 @@
 #pragma once
 
-#include <stdio.h>
-#include <string.h>
-
-#include "util.h"
-
 typedef struct {
     char *title;
     char *slug;
@@ -12,8 +7,7 @@ typedef struct {
     int total_challenges;
 } Lesson;
 
-#define NUM_LESSONS 5
-Lesson lessons[NUM_LESSONS] = {
+Lesson lessons[] = {
     {
         .title = "Assembly Tutorial",
         .description = "Learn the basics of RISC-V assembly.",
@@ -37,3 +31,4 @@ Lesson lessons[NUM_LESSONS] = {
         .slug = "#/lessons/branches",
     },
 };
+#define NUM_LESSONS (sizeof(lessons) / sizeof(Lesson))

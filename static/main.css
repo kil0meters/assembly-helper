@@ -407,7 +407,6 @@ pre {
         line-height: inherit;
         flex-grow: 1;
         resize: none;
-        overflow: hidden;
         outline: none;
         border: none;
         padding-left: 80px;
@@ -464,13 +463,18 @@ pre {
 }
 
 #conway {
-    grid-template-columns: repeat(1fr, 20);
-    grid-template-rows: repeat(1fr, 20);
+    display: grid;
+    grid-template-columns: repeat(20, 1fr);
+    grid-template-rows: repeat(20, 1fr);
 
     aspect-ratio: 1 / 1;
     width: 100%;
 
-    & .box.filled {
+    & .i {
+        content: "";
+    }
+
+    & .o {
         background-color: black;
     }
 }

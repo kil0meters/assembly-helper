@@ -1,7 +1,11 @@
 #pragma once
 
+#include <stdio.h>
+
 #include "base.h"
-#include "editor.h"
+#include "emulator_registers.h"
+#include "../lesson.h"
+#include "../challenge.h"
 
 const char *CHALLENGE_VIEW_TEMPLATE = QUOTE(
     <div class="dynamic-page">

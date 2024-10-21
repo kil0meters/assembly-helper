@@ -1,6 +1,6 @@
 #pragma once
 #include <stdint.h>
-#include <stdio.h>
+#include <string.h>
 
 typedef int8_t I8;
 typedef uint8_t U8;
@@ -74,7 +74,7 @@ B8 srt_is_digit(char c) {
 	return c >= '0' && c <= '9';
 }
 B8 srt_is_hex_digit(char c) {
-	return c >= '0' && c <= '9' || c >= 'A' && c <= 'F' || c >= 'a' && c <= 'f';
+	return (c >= '0' && c <= '9') || (c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f');
 }
 U32 srt_hex_digit_to_u32(char c) {
 	return (U32)(c >= '0' && c <= '9' ? c - '0' :
@@ -82,10 +82,10 @@ U32 srt_hex_digit_to_u32(char c) {
 		c >= 'a' && c <= 'f' ? c - 'a' + 10 : 0);
 }
 B8 srt_is_alpha(char c) {
-	return c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z';
+	return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
 }
 B8 srt_is_alphadigit(char c) {
-	return c >= '0' && c <= '9' || c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z';
+	return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
 }
 B8 srt_is_upper_alpha(char c) {
 	return c >= 'A' && c <= 'Z';
@@ -168,7 +168,7 @@ enum SRTIntParseError srt_parse_u64(U64* out, StrA* str) {
 	if (srcLen && src[0] == 'e') {
 		src++, srcLen--;
 		B32 exponentNegative = B8_FALSE;
-		if (srcLen && src[0] == '-' || src[0] == '+') {
+		if ((srcLen && src[0] == '-') || src[0] == '+') {
 			exponentNegative = src[0] == '-';
 			src++, srcLen--;
 		}

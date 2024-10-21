@@ -1,6 +1,8 @@
 #pragma once
 
 #include <stdlib.h>
+#include <string.h>
+
 #include "RISCVLib.h"
 #include "../rve_moss/risc-v-const.h"
 
@@ -87,7 +89,7 @@ void rva_encode_s(RVACtx* result, enum RVE_OPCODE_VALS opcode, U32 f3, U32 rs1, 
 	if (imm >= 1 << 12) {
 		rva_err(result, StrALit("Encoding failed, immediate too large"));
 	}
-	rva_push_word(result, imm << 25 & 0b1111111 << 25 | rs2 << 20 | rs1 << 15 | f3 << 12 | imm << 7 & 0b11111 << 7 | opcode);
+	rva_push_word(result, (imm << 20 & 0b1111111 << 25) | rs2 << 20 | rs1 << 15 | f3 << 12 | (imm << 7 & 0b11111 << 7) | opcode);
 }
 void rva_patch_b(RVACtx* ctx, RISCVWord* word, U32 imm) {
 	if (imm & 1) {
@@ -96,7 +98,7 @@ void rva_patch_b(RVACtx* ctx, RISCVWord* word, U32 imm) {
 	if (imm >= 1 << 13) {
 		rva_err(ctx, StrALit("Encoding failed, immediate too large"));
 	}
-	*word |= imm << 19 & 1 << 31 | imm << 20 & 0b111111 << 25 | imm << 7 & 0b1111 << 8 | imm >> 4 & 1 << 7;
+	*word |= (imm << 19 & 1 << 31) | (imm << 20 & 0b111111 << 25) | (imm << 7 & 0b1111 << 8) | (imm >> 4 & 1 << 7);
 }
 void rva_encode_b(RVACtx* result, enum RVE_OPCODE_VALS opcode, U32 f3, U32 rs1, U32 rs2, U32 imm) {
 	rva_push_word(result, rs2 << 20 | rs1 << 15 | f3 << 12 | opcode);
@@ -115,7 +117,7 @@ void rva_patch_j(RVACtx* ctx, RISCVWord* word, U32 imm) {
 	if (imm >= 1 << 21) {
 		rva_err(ctx, StrALit("Encoding failed, immediate too large"));
 	}
-	*word |= imm << 11 & 1 << 31 | imm << 20 & 0b1111111111 << 21 | imm << 9 & 1 << 20 | imm & 0b11111111 << 12;
+	*word |= (imm << 11 & 1 << 31) | (imm << 20 & 0b1111111111 << 21) | (imm << 9 & 1 << 20) | (imm & 0b11111111 << 12);
 }
 void rva_encode_j(RVACtx* result, enum RVE_OPCODE_VALS opcode, U32 rd, U32 imm) {
 	rva_push_word(result, rd << 7 | opcode);
@@ -224,7 +226,7 @@ void make_conditional_branch(RVACtx* ctx, enum RVE_B_FUNCT3 branchType) {
 	StrA jmpLabel = rva_consume_identifier(ctx);
 	U32 offset = 0;
 	RVALabelLocation* loc;
-	if (loc = rva_find_label(ctx, jmpLabel)) {
+	if ((loc = rva_find_label(ctx, jmpLabel))) {
 		U32 bMask = (1 << 13) - 1;
 		offset = loc->offset * 4 - ctx->insnCount * 4;
 		if ((~offset & ~bMask) != 0) {
@@ -408,7 +410,7 @@ RISCVWord* rva_assemble(U32* insnCount, StrA inSrc) {
 				StrA jmpLabel = rva_consume_identifier(&ctx);
 				U32 offset = 0;
 				RVALabelLocation* loc;
-				if (loc = rva_find_label(&ctx, jmpLabel)) {
+				if ((loc = rva_find_label(&ctx, jmpLabel))) {
 					U32 jMask = (1 << 21) - 1;
 					offset = loc->offset * 4 - ctx.insnCount * 4;
 					if ((~offset & ~jMask) != 0) {
@@ -423,7 +425,7 @@ RISCVWord* rva_assemble(U32* insnCount, StrA inSrc) {
 				StrA jmpLabel = rva_consume_identifier(&ctx);
 				U32 offset = 0;
 				RVALabelLocation* loc;
-				if (loc = rva_find_label(&ctx, jmpLabel)) {
+				if ((loc = rva_find_label(&ctx, jmpLabel))) {
 					U32 jMask = (1 << 21) - 1;
 					offset = loc->offset * 4 - ctx.insnCount * 4;
 					if ((~offset & ~jMask) != 0) {

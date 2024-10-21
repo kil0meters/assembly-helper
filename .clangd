@@ -1,4 +1,9 @@
 CompileFlags:
   Add:
+    - "-xc"
+    - "-Wall"
+    - "-Wpedantic"
+    - "-std=gnu23"
     - "--target=wasm32-unknown-emscripten"
-    - "-I/opt/homebrew/opt/emscripten/system/include"
+    - "-I/Users/kilometers/Projects/emsdk/upstream/emscripten/cache/sysroot/include"
+    - "-I/Users/kilometers/Projects/emsdk/upstream/emscripten/cache/sysroot/include/libc"

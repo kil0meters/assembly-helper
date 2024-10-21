@@ -3,7 +3,8 @@
 #include "exec.h"
 
 
-#define RVE_SIGN_EXTEND(v, sb) ((v) | (((v) & (1 << (sb))) ? ~((1 << (sb))-1) : 0))
+#define RVE_SIGN_EXTEND(v, sb)  ((v) | (((v) & (1 << (sb))) ? ~((1 << (sb))-1) : 0))
+//(u32)(((i32)(v << sb)) >> sb)
 
 
 typedef struct {

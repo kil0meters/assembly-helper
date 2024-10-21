@@ -1,23 +1,29 @@
 #pragma once
+
+#include <emscripten.h>
+#include <emscripten/html5.h>
+#include <string.h>
+
 #include "base.h"
-#include "emulator_registers.h"
 #include "completion_status.h"
+#include "emulator_registers.h"
 
 #include "../rva/RISCVAssembler.h"
+#include "../rve_moss/risc-v.h"
 
-const char *EDITOR_TEMPLATE = QUOTE(
+const char* EDITOR_TEMPLATE = QUOTE(
     <div id="line-numbers"></div>
     <textarea spellcheck="false" id="editor"></textarea>
 );
 
-void update_line_numbers(char *content) {
+void update_line_numbers(char* content) {
     char render_buffer[HTML_BUFFER_SIZE];
-    char *cur = render_buffer;
-    char *end = render_buffer + sizeof(render_buffer);
+    char* cur = render_buffer;
+    char* end = render_buffer + sizeof(render_buffer);
 
     int line_number = 1;
     cur += snprintf(cur, end - cur, "<span>%d</span>", line_number++);
-    char *c = content;
+    char* c = content;
     while (*c != '\0') {
         if (*c == '\n') {
             cur += snprintf(cur, end - cur, "<span>%d</span>", line_number++);
@@ -28,11 +34,13 @@ void update_line_numbers(char *content) {
     populate_selector_with_html("#line-numbers", render_buffer);
 }
 
-void render_editor(char *content) {
+void render_editor(char* content) {
     populate_selector_with_html("#editor-container", EDITOR_TEMPLATE);
 
     update_line_numbers(content);
     populate_selector_with_html("#editor", content);
+
+    // emscripten_set_keydown_callback_on_thread("editor", NULL, false, , pthread_t targetThread);
 
     // sad JS :(
     EM_ASM({
@@ -49,28 +57,28 @@ void render_editor(char *content) {
         });
 
         document.getElementById('editor').addEventListener('input', (e) => {
-            Module._editor_on_input(stringToNewUTF8(e.target.value))
+            Module["_editor_on_input"](stringToNewUTF8(e.target.value))
         });
     });
 }
 
-RISCVWord *rv_binary;
+RISCVWord* rv_binary;
 
 EMSCRIPTEN_KEEPALIVE
-void editor_on_input(char *input) {
+void editor_on_input(char* input) {
     update_line_numbers(input);
     free(input);
 }
 
 EMSCRIPTEN_KEEPALIVE
-void editor_execute(char *input) {
+void editor_execute(char* input) {
     char buffer[HTML_BUFFER_SIZE];
     uint32_t count;
-    rv_binary = rva_assemble(&count, (StrA){ .str = input, .length = strlen(input) });
+    rv_binary = rva_assemble(&count, (StrA){.str = input, .length = strlen(input)});
 
     if (rv_binary != NULL) {
-        char *cur = buffer;
-        char *end = buffer + sizeof(buffer);
+        char* cur = buffer;
+        char* end = buffer + sizeof(buffer);
         for (int i = 0; i < count; i++) {
             cur += snprintf(cur, end - cur, " %08x", rv_binary[i]);
         }

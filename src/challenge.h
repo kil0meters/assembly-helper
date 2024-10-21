@@ -1,9 +1,13 @@
 #pragma once
 
 #include <stdint.h>
+#include <string.h>
+
 #include "components/base.h"
-#include "rve_moss/register.h"
+#include "lesson.h"
 #include "rve_moss/exec.h"
+#include "rve_moss/register.h"
+#include "util.h"
 
 typedef enum ConditionalType {
     REGISTER_CONDITIONAL,
@@ -18,7 +22,7 @@ typedef struct {
 typedef struct {
     uint32_t start; // start address to check for
     uint32_t len;   // length of buffer to check for
-    uint8_t *buffer;
+    uint8_t* buffer;
 } MemoryConditional;
 
 typedef union {
@@ -48,17 +52,17 @@ bool check_clear_condition(ClearCondition c) {
 
 typedef struct {
     int id;
-    char *for_lesson_title;
+    char* for_lesson_title;
     int challenge_index;
-    char *slug;
+    char* slug;
 
-    char *title;
-    char *description;
-    char *starter_code;
+    char* title;
+    char* description;
+    char* starter_code;
     uint64_t required_cycle_count;
 
     // dynamically loaded in from localstorage
-    char *code;
+    char* code;
     bool complete;
     ClearCondition clear_condition;
 } Challenge;
@@ -66,14 +70,13 @@ typedef struct {
 #define NUM_CHALLENGES 6
 Challenge challenges[] = {
     // ===== TUTORIAL =====
-    {
-        .id = 1,
-        .for_lesson_title = "Assembly Tutorial",
-        .challenge_index = 0,
-        .slug = "/0",
+    {.id = 1,
+     .for_lesson_title = "Assembly Tutorial",
+     .challenge_index = 0,
+     .slug = "/0",
 
-        .title = "Intro To Assembly - Adding",
-        .description = QUOTE(
+     .title = "Intro To Assembly - Adding",
+     .description = QUOTE(
             <p>
                 That scary block of numbers above you are the values of the registers
                 present in our simulated CPU. Do not worry, all you need to know
@@ -96,21 +99,21 @@ Challenge challenges[] = {
                 Can you set the <code>x2</code> register to <code>0x20</code>?
             </p>
         ),
-        .starter_code = "; type some code here\n; try to set the x2 register to 0x20!\n",
-        .clear_condition = {
-            .descrim = REGISTER_CONDITIONAL,
-            .required_cycle_count = 1000000ULL,
-            .cond = { .reg = { 2, 0x20 } },
-        }
-    },
-    {
-        .id = 2,
-        .for_lesson_title = "Assembly Tutorial",
-        .challenge_index = 1,
-        .slug = "/1",
+         .starter_code =
+             "; type some code here\n; try to set the x2 register to 0x20!\n",
+         .clear_condition =
+             {
+                 .descrim = REGISTER_CONDITIONAL,
+                 .required_cycle_count = 1000000ULL,
+                 .cond = {.reg = {2, 0x20}},
+             }},
+     {.id = 2,
+      .for_lesson_title = "Assembly Tutorial",
+      .challenge_index = 1,
+      .slug = "/1",
 
-        .title = "Intro To Assembly - Memory",
-        .description = QUOTE(
+      .title = "Intro To Assembly - Memory",
+      .description = QUOTE(
             <p>
             	Now that you know how to do basic arithmetic, its important to know how to interact
             	with memory. Our simulated CPU has 256kb of memory. All program code starts at
@@ -132,21 +135,24 @@ Challenge challenges[] = {
                 Can you set address <code>0x1000</code> to <code>0x15</code>?
             </p>
         ),
-        .starter_code = "addi x2, 0x15\n; Set a register to the address you want to write to and use the store instruction\n",
-        .clear_condition = {
-            .descrim = MEMORY_CONDITIONAL,
-            .required_cycle_count = 1000000ULL,
-            .cond = { .mem = { 0x1000, 0x4,  (u8*)"\x15\x0\x0\x0"} },
-        }
-    },
-    {
-        .id = 3,
-        .for_lesson_title = "Assembly Tutorial",
-        .challenge_index = 2,
-        .slug = "/2",
+                           .starter_code =
+                               "addi x2, 0x15\n; Set a register to the address "
+                               "you want to write to and use the store "
+                               "instruction\n",
+                           .clear_condition =
+                               {
+                                   .descrim =
+                                       MEMORY_CONDITIONAL,
+                                   .required_cycle_count = 1000000ULL,
+                                   .cond = {.mem = {0x1000, 0x4, (u8*)"\x15\x0\x0\x0"}},
+                               }},
+                  {.id = 3,
+                   .for_lesson_title = "Assembly Tutorial",
+                   .challenge_index = 2,
+                   .slug = "/2",
 
-        .title = "Intro To Assembly - Branching",
-        .description = QUOTE(
+                   .title = "Intro To Assembly - Branching",
+                   .description = QUOTE(
             <p>
                 Now you can do arithmetic and access memory, but a program that does the same thing everytime is boring.
                 What you need is branches. Branches allow you to jump to a different part of memory if a condition is passed.
@@ -170,45 +176,45 @@ Challenge challenges[] = {
                 Write some code to write the byte <code>0x1</code> to addresses <code>0x1000</code>-<code>0x1010</code>.
             </p>
         ),
-        .starter_code = "addi x2, 0x1000\n",
-        .clear_condition = {
-            .descrim = MEMORY_CONDITIONAL,
-            .required_cycle_count = 1000000ULL,
-            .cond = { .mem = { 0x1000, 0x10,  (u8*)"\x1\x1\x1\x1\x1\x1\x1\x1\x1\x1\x1\x1\x1\x1\x1\x1"} },
-        }
-    },
-    // ===== LOOP UNROLLING =====
-    {
-        .id = 4,
-        .for_lesson_title = "Loop Unrolling",
-        .challenge_index = 0,
-        .slug = "/0",
+                       .starter_code = "addi x2, 0x1000\n",
+                       .clear_condition =
+                           {
+                               .descrim = MEMORY_CONDITIONAL,
+                               .required_cycle_count = 1000000ULL,
+                               .cond = {.mem = {0x1000, 0x10, (u8*)"\x1\x1\x1\x1\x1\x1\x1\x1\x1\x1\x1\x1\x1\x1\x1\x1"}},
+                           }},
+                   // ===== LOOP UNROLLING =====
+                   {
+                       .id = 4,
+                       .for_lesson_title = "Loop Unrolling",
+                       .challenge_index = 0,
+                       .slug = "/0",
 
-        .title = "Baby Steps",
-        .description = "Here a loop. Make it faster.",
-        .starter_code = "",
-    },
-    {
-        .id = 5,
-        .for_lesson_title = "Loop Unrolling",
-        .challenge_index = 1,
-        .slug = "/1",
+                       .title = "Baby Steps",
+                       .description = "Here a loop. Make it faster.",
+                       .starter_code = "",
+                   },
+                   {
+                       .id = 5,
+                       .for_lesson_title = "Loop Unrolling",
+                       .challenge_index = 1,
+                       .slug = "/1",
 
-        .title = "Teenage Steps",
-        .description = "Here a loop. Make it faster. Again",
-        .starter_code = "",
-    },
+                       .title = "Teenage Steps",
+                       .description = "Here a loop. Make it faster. Again",
+                       .starter_code = "",
+                   },
 
-    // ===== BRANCH PREDICTION =====
-    {
+                   // ===== BRANCH PREDICTION =====
+                   {
 
-        .for_lesson_title = "Branch Prediction",
-        .challenge_index = 0,
-        .slug = "/0",
+                       .for_lesson_title = "Branch Prediction",
+                       .challenge_index = 0,
+                       .slug = "/0",
 
-        .title = "Conway's Game of Life",
-        .description = "<div id=\"conway\"></div>",
-        .starter_code = " \
+                       .title = "Conway's Game of Life",
+                       .description = "<div id=\"conway\"></div>",
+                       .starter_code = " \
 ; Starting code \n\
 lui x31, 0x1000\n\
 lui x30, 0x2000\n\
@@ -226,20 +232,20 @@ addi x26, x0, 1 \n\
 updateloop: \n\
 \n\
 ; Update grid \n\
-addi x3, x0, 0 ; x \n\
 addi x4, x0, 0 ; y \n\
 loopy: \n\
+addi x3, x0, 0 ; x \n\
 loopx: \n\
 \n\
 ; count into x6 \n\
 add x6, x0, x0 \n\
-add x7, x0, x3 \n\
 add x8, x0, x4 \n\
-sub x7, x7, x26 ; inner x \n\
 sub x8, x8, x26 ; inner y \n\
-addi x9, x7, 3 ; boundx \n\
 addi x10, x8, 3 ; boundy \n\
 countloopy: \n\
+add x7, x0, x3 \n\
+sub x7, x7, x26 ; inner x \n\
+addi x9, x7, 3 ; boundx \n\
 countloopx: \n\
 ; Accumulate x6 \n\
 bne x3, x7, notcenter \n\
@@ -248,8 +254,8 @@ notcenter: \n\
 bgeu x7, x1, innercontinue \n\
 bgeu x8, x1, innercontinue \n\
 \n\
-mul x5, x4, x1 \n\
-add x5, x5, x3 ; y * width + x \n\
+mul x5, x8, x1 \n\
+add x5, x5, x7 ; y * width + x \n\
 add x5, x5, x31 ; current cell address \n\
 lbu x18, x5, 0 \n\
 add x6, x6, x18 \n\
@@ -276,7 +282,7 @@ addi x21, x0, 2 \n\
 beq x6, x21, cellok \n\
 addi x21, x0, 3 \n\
 beq x6, x21, cellok \n\
-addi x7, x0, 1 \n\
+addi x7, x0, 0 \n\
 cellok: \n\
 deadcell: \n\
 \n\
@@ -301,28 +307,27 @@ bne x27, x29, copyloop \n\
 \n\
 j updateloop \n\
         ",
-        // .starter_code = "addi x1, x0, 1\naddi x2, x0, 0x500\nsb x2, x1, 0x500",
-    },
+                   },
 
-    // ===== PIPELINING =====
-    {
-        .id = 6,
-        .for_lesson_title = "Pipelining",
-        .challenge_index = 0,
-        .slug = "/0",
+                   // ===== PIPELINING =====
+                   {
+                       .id = 6,
+                       .for_lesson_title = "Pipelining",
+                       .challenge_index = 0,
+                       .slug = "/0",
 
-        .title = "MARIO",
-        .description = "Mario, we need your help!",
-        .starter_code = "",
-    }
-};
+                       .title = "MARIO",
+                       .description = "Mario, we need your help!",
+                       .starter_code = "",
+                   }};
 
 #define CHALLENGE_PROGRESS_KEY "challenge-progress"
 void read_challenge_progress() {
-    char *progress = local_storage_get(CHALLENGE_PROGRESS_KEY);
-    if (progress == NULL) return;
+    char* progress = local_storage_get(CHALLENGE_PROGRESS_KEY);
+    if (progress == NULL)
+        return;
 
-    char *token = strtok(progress, ",");
+    char* token = strtok(progress, ",");
 
     while (token != NULL) {
         int i;
@@ -330,12 +335,15 @@ void read_challenge_progress() {
         for (i = 0; i < NUM_CHALLENGES; i++)
             if (challenges[i].id == atoi(token))
                 break;
-        if (i == NUM_CHALLENGES) break;
+        if (i == NUM_CHALLENGES)
+            break;
 
         token = strtok(NULL, ",");
 
-        if (token != NULL) challenges[i].complete = atoi(token);
-        else break;
+        if (token != NULL)
+            challenges[i].complete = atoi(token);
+        else
+            break;
 
         token = strtok(NULL, ",");
     }
@@ -345,10 +353,11 @@ void read_challenge_progress() {
 
 void save_challenge_progress() {
     char buf[1024];
-    char *cur = buf;
-    const char *end = buf + sizeof(buf);
+    char* cur = buf;
+    const char* end = buf + sizeof(buf);
     for (int i = 0; i < NUM_LESSONS; i++) {
-        cur += snprintf(cur, end - cur, "%d,%d,", challenges[i].id, challenges[i].complete);
+        cur += snprintf(
+            cur, end - cur, "%d,%d,", challenges[i].id, challenges[i].complete);
     }
 
     local_storage_set(CHALLENGE_PROGRESS_KEY, buf);

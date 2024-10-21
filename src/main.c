@@ -1,25 +1,24 @@
 #include <emscripten.h>
 
-#include "util.h"
-#include "lesson.h"
 #include "challenge.h"
+#include "components/editor.h"
+#include "globals.h"
+#include "lesson.h"
+#include "util.h"
 
-Challenge *current_challenge = NULL;
-Lesson *current_lesson = NULL;
-
-#include "rve_moss/risc-v.h"
 #include "components/base.h"
-#include "components/lesson_overview.h"
 #include "components/challenge_view.h"
-#include "components/conway_view.h"
 #include "components/lesson_list.h"
+#include "components/lesson_overview.h"
+#include "rve_moss/risc-v.h"
+
+#include "components/conway_view.h"
 
 char render_buffer[HTML_BUFFER_SIZE];
 
 EMSCRIPTEN_KEEPALIVE
 void render_on_route() {
-    char *route = (char*)EM_ASM_PTR({
-      return stringToNewUTF8(window.location.hash);
+    char* route = (char*)EM_ASM_PTR({ return stringToNewUTF8(window.location.hash);
     });
 
     bool found = false;
@@ -49,8 +48,9 @@ void render_on_route() {
                     break;
                 } else {
                     for (int j = 0; j < NUM_CHALLENGES; j++) {
-                        if (strncmp(route + lesson_slug_start_len, challenges[j].slug, strlen(challenges[j].slug)) == 0
-                         && strncmp(challenges[j].for_lesson_title, lessons[i].title, strlen(lessons[i].title)) == 0) {
+                        if (strncmp(route + lesson_slug_start_len, challenges[j].slug, strlen(challenges[j].slug)) ==
+                                0 &&
+                            strncmp(challenges[j].for_lesson_title, lessons[i].title, strlen(lessons[i].title)) == 0) {
                             challenge_view_template(render_buffer, &lessons[i], &challenges[j]);
                             populate_selector_with_html("#content", render_buffer);
 
@@ -59,16 +59,6 @@ void render_on_route() {
                             set_element_classes("#root", "open");
 
                             render_editor(challenges[j].starter_code);
-
-                            if (challenges[j].id == 5) {
-                                uint32_t count;
-                                RISCVWord *rv_binary = rva_assemble(&count, (StrA){ .str = challenges[j].starter_code, .length = strlen(challenges[j].starter_code) });
-                                rve_init();
-                                rve_load_program(rv_binary, count);
-
-                                jlog("test");
-                                step_conway();
-                            }
 
                             current_lesson = &lessons[j];
                             current_challenge = &challenges[j];
@@ -91,7 +81,7 @@ void render_on_route() {
 }
 
 EMSCRIPTEN_KEEPALIVE void toggle_sidebar() {
-    char *classes = get_element_classes("#root");
+    char* classes = get_element_classes("#root");
     if (strncmp(classes, "open", 5) == 0) {
         set_element_classes("#root", "closed");
     } else {
@@ -106,8 +96,8 @@ EMSCRIPTEN_KEEPALIVE void init() {
     rve_init();
 
     EM_ASM({
-        window.addEventListener('hashchange', () => Module._render_on_route());
-        window.addEventListener('load', () => Module._render_on_route());
-        Module._render_on_route();
+        window.addEventListener('hashchange', () => Module["_render_on_route"]());
+        window.addEventListener('load', () => Module["_render_on_route"]());
+        Module["_render_on_route"]();
     });
 }

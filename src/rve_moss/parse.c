@@ -189,7 +189,7 @@ rve_generic_inst rve_parse_b_type(u32 inst, enum RVE_OPCODES op) {
 	out.funct_3 = ((inst >> 12) & 0b111);
 	out.imm |= ((inst >> 7) & 0b11110);
 	out.imm |= ((inst >> 7) & 0b1) << 11;
-	out.imm = RVE_SIGN_EXTEND(out.imm, 11);
+	out.imm = RVE_SIGN_EXTEND(out.imm, 12);
 	out.opcode = (inst & 0b1111111);
 	rve_generic_inst o;
 	memcpy(o.data, &out, 8);

@@ -1,7 +1,10 @@
 #pragma once
 #include "base.h"
 
-const char *LESSON_LIST_TEMPLATE = " \
+#include "../challenge.h"
+#include "../lesson.h"
+
+const char* LESSON_LIST_TEMPLATE = " \
 <div class=\"grid-container\"> \
     <div class=\"page\"> \
         <h1>Assembly Playground</h1> \
@@ -18,14 +21,15 @@ const char *LESSON_LIST_TEMPLATE = " \
     </div> \
 </div>";
 
-const char *LESSON_LIST_ITEM_TEMPLATE = QUOTE(
+const char* LESSON_LIST_ITEM_TEMPLATE =
+    QUOTE(
 <a class="card" href="%s"><span class="inner-text">%s</span> <span class="badge">%d/%d</span></a>
 );
 
-void lesson_list_template(char *out, int num_items, Lesson *items) {
+void lesson_list_template(char* out, int num_items, Lesson* items) {
     char buffer[HTML_BUFFER_SIZE];
-    char *cur = buffer;
-    const char *end = buffer + sizeof(buffer);
+    char* cur = buffer;
+    const char* end = buffer + sizeof(buffer);
 
     for (int i = 0; i < num_items; i++) {
         int completed_challenges = 0;
@@ -40,9 +44,13 @@ void lesson_list_template(char *out, int num_items, Lesson *items) {
             }
         }
 
-        cur += snprintf(cur, end - cur, LESSON_LIST_ITEM_TEMPLATE,
-                        items[i].slug, items[i].title,
-                        completed_challenges, total_challenges);
+        cur += snprintf(cur,
+                        end - cur,
+                        LESSON_LIST_ITEM_TEMPLATE,
+                        items[i].slug,
+                        items[i].title,
+                        completed_challenges,
+                        total_challenges);
     }
 
     snprintf(out, HTML_BUFFER_SIZE, LESSON_LIST_TEMPLATE, buffer);
