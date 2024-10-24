@@ -1,7 +1,18 @@
 #pragma once
 #include <emscripten.h>
+#include <stdint.h>
 
-char ERROR_BUF[1024];
+EM_JS(void, write_buffer_to_canvas, (const char *target, uint8_t *buffer_ptr, uint32_t width, uint32_t height), {
+    const canvas = document.querySelector(UTF8ToString(target));
+    const ctx = canvas.getContext('2d');
+    const buffer = HEAPU8.subarray(buffer_ptr, buffer_ptr + 4 * width * height);
+
+    canvas.width = width;
+    canvas.height = height;
+
+    const imageData = new ImageData(new Uint8ClampedArray(buffer), width, height);
+    ctx.putImageData(imageData, 0, 0);
+})
 
 EM_JS(void, jlog, (const char *val), { console.log(UTF8ToString(val));
 })

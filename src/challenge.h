@@ -12,6 +12,7 @@
 typedef enum ConditionalType {
     REGISTER_CONDITIONAL,
     MEMORY_CONDITIONAL,
+    MEMORY_MULTISHOT_CONDITIONAL,
 } ConditionalType;
 
 typedef struct {
@@ -25,9 +26,15 @@ typedef struct {
     uint8_t* buffer;
 } MemoryConditional;
 
+typedef struct {
+    uint32_t snapshot_count;
+    MemoryConditional* memory_conditions;
+} MemoryMultishotConditional;
+
 typedef union {
     RegisterConditional reg;
     MemoryConditional mem;
+    MemoryMultishotConditional mem_multishot;
 } ConditionalUnion;
 
 typedef struct {
@@ -36,15 +43,23 @@ typedef struct {
     ConditionalType descrim;
 } ClearCondition;
 
-bool check_clear_condition(ClearCondition c) {
+typedef enum ClearConditionResult {
+    CLEAR_CONDITION_FAILED = false,
+    CLEAR_CONDITION_SUCCESS = true,
+    CLEAR_CONDITION_PENDING,
+} ClearConditionResult;
+
+ClearConditionResult check_clear_condition(ClearCondition c) {
     switch (c.descrim) {
         case REGISTER_CONDITIONAL:
             return rve_register_get(c.cond.reg.target) == c.cond.reg.value;
         case MEMORY_CONDITIONAL:
             for (uint32_t i = 0; i < c.cond.mem.len; i++)
                 if (rve_memory[c.cond.mem.start + i] != c.cond.mem.buffer[i])
-                    return false;
-            return true;
+                    return CLEAR_CONDITION_SUCCESS;
+            return CLEAR_CONDITION_SUCCESS;
+        case MEMORY_MULTISHOT_CONDITIONAL:
+            return CLEAR_CONDITION_PENDING;
     }
 
     return false;
@@ -99,8 +114,7 @@ Challenge challenges[] = {
                 Can you set the <code>x2</code> register to <code>0x20</code>?
             </p>
         ),
-         .starter_code =
-             "; type some code here\n; try to set the x2 register to 0x20!\n",
+         .starter_code = "; type some code here\n; try to set the x2 register to 0x20!\n",
          .clear_condition =
              {
                  .descrim = REGISTER_CONDITIONAL,
@@ -135,24 +149,22 @@ Challenge challenges[] = {
                 Can you set address <code>0x1000</code> to <code>0x15</code>?
             </p>
         ),
-                           .starter_code =
-                               "addi x2, 0x15\n; Set a register to the address "
-                               "you want to write to and use the store "
-                               "instruction\n",
-                           .clear_condition =
-                               {
-                                   .descrim =
-                                       MEMORY_CONDITIONAL,
-                                   .required_cycle_count = 1000000ULL,
-                                   .cond = {.mem = {0x1000, 0x4, (u8*)"\x15\x0\x0\x0"}},
-                               }},
-                  {.id = 3,
-                   .for_lesson_title = "Assembly Tutorial",
-                   .challenge_index = 2,
-                   .slug = "/2",
+                        .starter_code = "addi x2, 0x15\n; Set a register to the address "
+                                        "you want to write to and use the store "
+                                        "instruction\n",
+                        .clear_condition =
+                            {
+                                .descrim = MEMORY_CONDITIONAL,
+                                .required_cycle_count = 1000000ULL,
+                                .cond = {.mem = {0x1000, 0x4, (u8*)"\x15\x0\x0\x0"}},
+                            }},
+              {.id = 3,
+               .for_lesson_title = "Assembly Tutorial",
+               .challenge_index = 2,
+               .slug = "/2",
 
-                   .title = "Intro To Assembly - Branching",
-                   .description = QUOTE(
+               .title = "Intro To Assembly - Branching",
+               .description = QUOTE(
             <p>
                 Now you can do arithmetic and access memory, but a program that does the same thing everytime is boring.
                 What you need is branches. Branches allow you to jump to a different part of memory if a condition is passed.
@@ -176,45 +188,46 @@ Challenge challenges[] = {
                 Write some code to write the byte <code>0x1</code> to addresses <code>0x1000</code>-<code>0x1010</code>.
             </p>
         ),
-                       .starter_code = "addi x2, 0x1000\n",
-                       .clear_condition =
-                           {
-                               .descrim = MEMORY_CONDITIONAL,
-                               .required_cycle_count = 1000000ULL,
-                               .cond = {.mem = {0x1000, 0x10, (u8*)"\x1\x1\x1\x1\x1\x1\x1\x1\x1\x1\x1\x1\x1\x1\x1\x1"}},
-                           }},
-                   // ===== LOOP UNROLLING =====
-                   {
-                       .id = 4,
-                       .for_lesson_title = "Loop Unrolling",
-                       .challenge_index = 0,
-                       .slug = "/0",
+                   .starter_code = "addi x2, 0x1000\n",
+                   .clear_condition =
+                       {
+                           .descrim = MEMORY_CONDITIONAL,
+                           .required_cycle_count = 1000000ULL,
+                           .cond = {.mem = {0x1000, 0x10, (u8*)"\x1\x1\x1\x1\x1\x1\x1\x1\x1\x1\x1\x1\x1\x1\x1\x1"}},
+                       }},
+               // ===== LOOP UNROLLING =====
+               {
+                   .id = 4,
+                   .for_lesson_title = "Loop Unrolling",
+                   .challenge_index = 0,
+                   .slug = "/0",
 
-                       .title = "Baby Steps",
-                       .description = "Here a loop. Make it faster.",
-                       .starter_code = "",
-                   },
-                   {
-                       .id = 5,
-                       .for_lesson_title = "Loop Unrolling",
-                       .challenge_index = 1,
-                       .slug = "/1",
+                   .title = "Baby Steps",
+                   .description = "Here a loop. Make it faster.",
+                   .starter_code = "",
+               },
+               {
+                   .id = 5,
+                   .for_lesson_title = "Loop Unrolling",
+                   .challenge_index = 1,
+                   .slug = "/1",
 
-                       .title = "Teenage Steps",
-                       .description = "Here a loop. Make it faster. Again",
-                       .starter_code = "",
-                   },
+                   .title = "Teenage Steps",
+                   .description = "Here a loop. Make it faster. Again",
+                   .starter_code = "",
+               },
 
-                   // ===== BRANCH PREDICTION =====
-                   {
+               // ===== BRANCH PREDICTION =====
+               {
 
-                       .for_lesson_title = "Branch Prediction",
-                       .challenge_index = 0,
-                       .slug = "/0",
+                   .for_lesson_title = "Branch Prediction",
+                   .challenge_index = 0,
+                   .slug = "/0",
 
-                       .title = "Conway's Game of Life",
-                       .description = "<div id=\"conway\"></div>",
-                       .starter_code = " \
+                   .title = "Conway's Game of Life",
+                   .description =
+                       "Optimize this conway's game of life implementation to minimize the number of branches!",
+                   .starter_code = " \
 ; Starting code \n\
 lui x31, 0x1000\n\
 lui x30, 0x2000\n\
@@ -307,19 +320,19 @@ bne x27, x29, copyloop \n\
 \n\
 j updateloop \n\
         ",
-                   },
+               },
 
-                   // ===== PIPELINING =====
-                   {
-                       .id = 6,
-                       .for_lesson_title = "Pipelining",
-                       .challenge_index = 0,
-                       .slug = "/0",
+               // ===== PIPELINING =====
+               {
+                   .id = 6,
+                   .for_lesson_title = "Pipelining",
+                   .challenge_index = 0,
+                   .slug = "/0",
 
-                       .title = "MARIO",
-                       .description = "Mario, we need your help!",
-                       .starter_code = "",
-                   }};
+                   .title = "MARIO",
+                   .description = "Mario, we need your help!",
+                   .starter_code = "",
+               }};
 
 #define CHALLENGE_PROGRESS_KEY "challenge-progress"
 void read_challenge_progress() {
@@ -356,8 +369,7 @@ void save_challenge_progress() {
     char* cur = buf;
     const char* end = buf + sizeof(buf);
     for (int i = 0; i < NUM_LESSONS; i++) {
-        cur += snprintf(
-            cur, end - cur, "%d,%d,", challenges[i].id, challenges[i].complete);
+        cur += snprintf(cur, end - cur, "%d,%d,", challenges[i].id, challenges[i].complete);
     }
 
     local_storage_set(CHALLENGE_PROGRESS_KEY, buf);

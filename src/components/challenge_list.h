@@ -19,7 +19,7 @@ const char* CHALLENGE_LIST_ITEM_TEMPLATE =
     </a>
 );
 
-void challenge_list_template(char* out, Lesson* lesson) {
+void challenge_list_component(char* target, Lesson* lesson) {
     char buffer[HTML_BUFFER_SIZE];
     char* cur = buffer;
     const char* end = buffer + sizeof(buffer);
@@ -37,8 +37,10 @@ void challenge_list_template(char* out, Lesson* lesson) {
     }
 
     if (end != cur) {
-        snprintf(out, HTML_BUFFER_SIZE, CHALLENGE_LIST_TEMPLATE, buffer);
+        snprintf(g_render_buffer, HTML_BUFFER_SIZE, CHALLENGE_LIST_TEMPLATE, buffer);
     } else {
-        snprintf(out, HTML_BUFFER_SIZE, "");
+        snprintf(g_render_buffer, HTML_BUFFER_SIZE, "");
     }
+
+    populate_selector_with_html(target, g_render_buffer);
 }

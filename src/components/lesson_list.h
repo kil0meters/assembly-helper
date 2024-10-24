@@ -26,7 +26,7 @@ const char* LESSON_LIST_ITEM_TEMPLATE =
 <a class="card" href="%s"><span class="inner-text">%s</span> <span class="badge">%d/%d</span></a>
 );
 
-void lesson_list_template(char* out, int num_items, Lesson* items) {
+void lesson_list_component(char* target, int num_items, Lesson* items) {
     char buffer[HTML_BUFFER_SIZE];
     char* cur = buffer;
     const char* end = buffer + sizeof(buffer);
@@ -53,5 +53,6 @@ void lesson_list_template(char* out, int num_items, Lesson* items) {
                         total_challenges);
     }
 
-    snprintf(out, HTML_BUFFER_SIZE, LESSON_LIST_TEMPLATE, buffer);
+    snprintf(g_render_buffer, HTML_BUFFER_SIZE, LESSON_LIST_TEMPLATE, buffer);
+    populate_selector_with_html(target, g_render_buffer);
 }

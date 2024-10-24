@@ -1,9 +1,11 @@
 #pragma once
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "RISCVLib.h"
+#include "../globals.h"
 #include "../rve_moss/risc-v-const.h"
 
 typedef U32 RISCVWord;
@@ -65,7 +67,12 @@ void rva_err_explicit(RVACtx* ctx, StrA errMsg, const void* errPosPtr) {
 	U32 errPos = errPosPtr ? (const char*)errPosPtr - ctx->originalSrc.str : ctx->src.str - ctx->originalSrc.str;
 	U32 lineCount = 0;
 	for (U32 i = 0; i < errPos; lineCount += ctx->originalSrc.str[i++] == '\n');
-	printf("Line: %d: %s\n", lineCount, errMsg.str);
+
+	if (g_assembler_error_count < MAX_ASSEMBLER_ERRORS) {
+    	g_assembler_errors[g_assembler_error_count].line = lineCount;
+    	snprintf(g_assembler_errors[g_assembler_error_count].msg, sizeof(g_assembler_errors[0]), "%s", errMsg.str);
+    	g_assembler_error_count++;
+	}
 }
 void rva_err(RVACtx* ctx, StrA errMsg) {
 	rva_err_explicit(ctx, errMsg, NULL);
@@ -495,7 +502,7 @@ RISCVWord* rva_assemble(U32* insnCount, StrA inSrc) {
 	free(ctx.labels);
 	free(ctx.labelPatches);
 	if (ctx.errored) {
-		rva_err(&ctx, StrALit("Errors detected"));
+		// rva_err(&ctx, StrALit("Errors detected"));
 		return NULL;
 	}
 	*insnCount = ctx.insnCount;

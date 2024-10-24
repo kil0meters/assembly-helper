@@ -1,9 +1,13 @@
 #include <emscripten.h>
+#include <pthread.h>
+#include <string.h>
 
 #include "challenge.h"
 #include "components/editor.h"
+#include "emscripten/emscripten.h"
 #include "globals.h"
 #include "lesson.h"
+#include "signals.h"
 #include "util.h"
 
 #include "components/base.h"
@@ -12,38 +16,35 @@
 #include "components/lesson_overview.h"
 #include "rve_moss/risc-v.h"
 
-#include "components/conway_view.h"
-
-char render_buffer[HTML_BUFFER_SIZE];
+#include "components/display.h"
 
 EMSCRIPTEN_KEEPALIVE
 void render_on_route() {
-    char* route = (char*)EM_ASM_PTR({ return stringToNewUTF8(window.location.hash);
-    });
-
+    char* route = (char*)EM_ASM_PTR({ return stringToNewUTF8(window.location.hash); });
     bool found = false;
+
     set_element_classes("#root", "closed");
 
-    current_challenge = NULL;
-    current_lesson = NULL;
+    // always reset runtime on route change
+    runtime_reset(g_runtime);
+
+    g_current_challenge = NULL;
+    g_current_lesson = NULL;
 
     if (strncmp(route, "#/", 3) == 0 || strncmp(route, "#", 2) == 0 || strncmp(route, "", 1) == 0) {
-        lesson_list_template(render_buffer, NUM_LESSONS, lessons);
-        populate_selector_with_html("#content", render_buffer);
+        jlog((char*)"what");
+        lesson_list_component("#content", NUM_LESSONS, lessons);
         found = true;
     } else {
         for (int i = 0; i < NUM_LESSONS; i++) {
             int lesson_slug_start_len = strlen(lessons[i].slug);
             if (strncmp(route, lessons[i].slug, lesson_slug_start_len - 1) == 0) {
                 if (strlen(route) == lesson_slug_start_len) {
-                    lesson_list_template(render_buffer, NUM_LESSONS, lessons);
-                    populate_selector_with_html("#content", render_buffer);
-
-                    lesson_overview_template(render_buffer, &lessons[i]);
-                    populate_selector_with_html("#sidebar", render_buffer);
+                    lesson_list_component("#content", NUM_LESSONS, lessons);
+                    lesson_overview_component("#sidebar", &lessons[i]);
                     set_element_classes("#root", "open");
 
-                    current_lesson = &lessons[i];
+                    g_current_lesson = &lessons[i];
                     found = true;
                     break;
                 } else {
@@ -51,17 +52,15 @@ void render_on_route() {
                         if (strncmp(route + lesson_slug_start_len, challenges[j].slug, strlen(challenges[j].slug)) ==
                                 0 &&
                             strncmp(challenges[j].for_lesson_title, lessons[i].title, strlen(lessons[i].title)) == 0) {
-                            challenge_view_template(render_buffer, &lessons[i], &challenges[j]);
-                            populate_selector_with_html("#content", render_buffer);
-
-                            challenge_sidebar_template(render_buffer, &challenges[j]);
-                            populate_selector_with_html("#sidebar", render_buffer);
+                            challenge_view_component("#content", &lessons[i], &challenges[j]);
+                            challenge_sidebar_component("#sidebar", &challenges[j]);
                             set_element_classes("#root", "open");
 
-                            render_editor(challenges[j].starter_code);
+                            editor_component(challenges[j].starter_code);
+                            runner_component("#execution-buddy");
 
-                            current_lesson = &lessons[j];
-                            current_challenge = &challenges[j];
+                            g_current_lesson = &lessons[j];
+                            g_current_challenge = &challenges[j];
                             found = true;
                             break;
                         }
@@ -72,9 +71,14 @@ void render_on_route() {
     }
 
     if (!found) {
-        jlog("404");
-        snprintf(render_buffer, HTML_BUFFER_SIZE, QUOTE(<h1>404</h1><a href="#/">back to home</a>));
-        populate_selector_with_html("#content", render_buffer);
+        snprintf(
+            g_render_buffer, HTML_BUFFER_SIZE, QUOTE(
+            <div class="p-16">
+                <h1>404</h1>
+                <a href="#/">back to home</a>
+            </div>
+        ));
+        populate_selector_with_html("#content", g_render_buffer);
     }
 
     free(route);
@@ -95,9 +99,52 @@ EMSCRIPTEN_KEEPALIVE void init() {
     read_challenge_progress();
     rve_init();
 
+    g_runtime = runtime_create();
+
+    job_init();
+    editor_init();
+
+    // start simulation thread, never joined
+    pthread_t thread;
+    pthread_create(&thread, NULL, exe_loop, NULL);
+
     EM_ASM({
         window.addEventListener('hashchange', () => Module["_render_on_route"]());
         window.addEventListener('load', () => Module["_render_on_route"]());
         Module["_render_on_route"]();
     });
+
+    // inner event loop
+    while (true) {
+        pthread_mutex_lock(&g_current_job_mutex);
+        bool* p_running = signal_get(g_current_job->running);
+        if (*p_running) {
+            emulator_registers_component("#emulator-registers");
+            display_component("#emulator-screen");
+
+            pthread_mutex_unlock(&g_current_job_mutex);
+        } else if (g_current_job->stopped) {
+            g_current_job->stopped = false;
+            *p_running = false;
+
+            pthread_mutex_unlock(&g_current_job_mutex);
+
+            // we call signal_set outside of the mutex in order to prevent a deadlock.
+            // this is thread-safe because we are not actually mutating the value.
+            signal_set(g_current_job->running, p_running);
+        } else {
+            pthread_mutex_unlock(&g_current_job_mutex);
+        }
+
+        // bool status = check_clear_condition(g_current_challenge->clear_condition);
+        // if (status) {
+        //     g_current_challenge->complete = true;
+        //     save_challenge_progress();
+        // }
+
+        // completion_status_component(buffer, status);
+
+        // run every frame
+        emscripten_sleep(16);
+    }
 }

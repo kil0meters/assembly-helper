@@ -1,5 +1,6 @@
 #include "arr.h"
 #include "risc-v.h"
+#include <stdio.h>
 
 void inst_array_alloc(rve_inst_array* arr, u32 size) {
 	arr->data = calloc(size, sizeof(rve_instruction));

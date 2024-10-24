@@ -1,10 +1,11 @@
 #pragma once
+#include "../util.h"
 #include "base.h"
 
 #include "../rve_moss/register.h"
 
-const char *EMULATOR_REGISTERS_TEMPLATE = QUOTE(
-    <div class="register-list card">
+const char* EMULATOR_REGISTERS_TEMPLATE = QUOTE(
+    <div class="register-list">
         <span class="register-label">pc</span> <span class="register-value">0x%08x</span>
         <span class="register-label">x0</span> <span class="register-value">0x%08x</span>
         <span class="register-label">x1 (ra)</span> <span class="register-value">0x%08x</span>
@@ -41,40 +42,43 @@ const char *EMULATOR_REGISTERS_TEMPLATE = QUOTE(
     </div>
 );
 
-void emulator_registers_template(char *out) {
-    snprintf(out, HTML_BUFFER_SIZE, EMULATOR_REGISTERS_TEMPLATE,
-        rve_register_get(RVE_PC_REGISTER),
-        rve_register_get(0),
-        rve_register_get(1),
-        rve_register_get(2),
-        rve_register_get(3),
-        rve_register_get(4),
-        rve_register_get(5),
-        rve_register_get(6),
-        rve_register_get(7),
-        rve_register_get(8),
-        rve_register_get(9),
-        rve_register_get(10),
-        rve_register_get(11),
-        rve_register_get(12),
-        rve_register_get(13),
-        rve_register_get(14),
-        rve_register_get(15),
-        rve_register_get(16),
-        rve_register_get(17),
-        rve_register_get(18),
-        rve_register_get(19),
-        rve_register_get(20),
-        rve_register_get(21),
-        rve_register_get(22),
-        rve_register_get(23),
-        rve_register_get(24),
-        rve_register_get(25),
-        rve_register_get(26),
-        rve_register_get(27),
-        rve_register_get(28),
-        rve_register_get(29),
-        rve_register_get(30),
-        rve_register_get(31)
-    );
+void emulator_registers_component(char* target) {
+    snprintf(g_render_buffer,
+             HTML_BUFFER_SIZE,
+             EMULATOR_REGISTERS_TEMPLATE,
+             rve_register_get(RVE_PC_REGISTER),
+             rve_register_get(0),
+             rve_register_get(1),
+             rve_register_get(2),
+             rve_register_get(3),
+             rve_register_get(4),
+             rve_register_get(5),
+             rve_register_get(6),
+             rve_register_get(7),
+             rve_register_get(8),
+             rve_register_get(9),
+             rve_register_get(10),
+             rve_register_get(11),
+             rve_register_get(12),
+             rve_register_get(13),
+             rve_register_get(14),
+             rve_register_get(15),
+             rve_register_get(16),
+             rve_register_get(17),
+             rve_register_get(18),
+             rve_register_get(19),
+             rve_register_get(20),
+             rve_register_get(21),
+             rve_register_get(22),
+             rve_register_get(23),
+             rve_register_get(24),
+             rve_register_get(25),
+             rve_register_get(26),
+             rve_register_get(27),
+             rve_register_get(28),
+             rve_register_get(29),
+             rve_register_get(30),
+             rve_register_get(31));
+
+    populate_selector_with_html(target, g_render_buffer);
 }
